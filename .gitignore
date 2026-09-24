@@ -1,0 +1,15 @@
+build/
+.gradle/
+node_modules/
+dist/
+docs/book/
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.tsbuildinfo
+.claude/*
+!.claude/agents/
+!.claude/commands/
+
+# Paths that stay local. Add project-specific entries below.

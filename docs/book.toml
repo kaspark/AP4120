@@ -1,0 +1,12 @@
+[book]
+title = "AP4120"
+authors = ["AP4120"]
+src = "src"
+
+[build]
+create-missing = false
+
+[output.html]
+additional-css = ["taltech.css"]
+default-theme = "light"
+preferred-dark-theme = "light"
