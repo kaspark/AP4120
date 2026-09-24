@@ -1,0 +1,4 @@
+# Local development profile (run with --spring.profiles.active=local — the scripts do).
+auth:
+  mock:
+    enabled: true

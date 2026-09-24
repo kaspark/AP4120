@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The tea component changelog. A released changeset is immutable — append a new
+  file, never edit one that has already been applied.
+-->
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+  <include file="tea/db/changelog/tea/tea-schema.sql"/>
+  <include file="tea/db/changelog/tea/01-user.sql"/>
+  <include file="tea/db/changelog/tea/02-category.sql"/>
+  <include file="tea/db/changelog/tea/03-tea.sql"/>
+  <include file="tea/db/changelog/tea/90-demo-data.sql"/>
+
+</databaseChangeLog>

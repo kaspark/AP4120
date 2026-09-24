@@ -1,0 +1,36 @@
+# Tea register. The local profile (application-local.yml) switches on mock auth.
+
+server:
+  port: ${TEA_PORT:18440}
+
+spring:
+  application:
+    name: ite4120-tea-register
+  datasource:
+    url: ${TEA_DB_URL:jdbc:postgresql://localhost:18520/tea}
+    username: ${TEA_DB_USER:tea}
+    password: ${TEA_DB_PASSWORD:tea}
+    hikari:
+      connection-init-sql: "select set_config('core.client_identifier', 'tea', false)"
+  liquibase:
+    change-log: classpath:tea/db/changelog/changelog.xml
+    default-schema: tea
+    liquibase-schema: public
+    contexts: demo
+    parameters:
+      app-username: ${TEA_DB_USER:tea}
+      viewer-username: ${TEA_DB_USER:tea}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+auth:
+  mock:
+    enabled: false

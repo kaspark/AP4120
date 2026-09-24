@@ -1,6 +1,6 @@
 [book]
-title = "AP4120"
-authors = ["AP4120"]
+title = "AP4120 · Tea register"
+authors = ["ITE4120"]
 src = "src"
 
 [build]

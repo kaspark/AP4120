@@ -1,4 +1,4 @@
-# AGENTS.md — ITE4120 animals-register template
+# AGENTS.md — ITE4120 tea register
 
 Canonical instructions for AI coding agents working in this repository — the
 single source of truth, the same rules for every tool. Read on startup by
@@ -25,9 +25,8 @@ break.
 
 A course template: a working Spring Boot + React application consuming the Helex
 platform as **published libraries** (`org.helex.emr:*` from GitHub Packages,
-`@helex/ui` and friends from GitHub npm). The worked example component is the
-**animals register** (`ee.taltech.ite4120.animals`); each student group adds its
-own component in a different domain, following the same shape.
+`@helex/ui` and friends from GitHub npm). This repository's component is the
+**tea register** (`ee.taltech.ite4120.tea`): users, classifications, and teas.
 
 ## Process rules (non-negotiable)
 
@@ -44,7 +43,7 @@ own component in a different domain, following the same shape.
    bare `--` terminator closing every changeset); prose is a single-line
    `--comment` plus a `/* */` block; body comments that start a line are
    `/* */` blocks; datatypes align at column 25; business-table indexes carry
-   `where (sys_status = 'A')`. Every file under `animals/db/changelog/` is the
+   `where (sys_status = 'A')`. Every file under `tea/db/changelog/` is the
    example.
 
 ## Architecture conventions
@@ -68,7 +67,7 @@ own component in a different domain, following the same shape.
   `ee.taltech.ite4120.config`, not inside a component.
 - UI: every input is an existing `@helex/ui` or antd component. Lists on
   `ResourceList`, record pages on `ResourceForm` + `useDataController`
-  (`AnimalDetail.tsx` is the example).
+  (`TeaDetail.tsx` is the example).
 
 ## Known pitfalls (earned the hard way)
 
@@ -105,7 +104,7 @@ own component in a different domain, following the same shape.
   function`): antd's `Form.Item` injects the form-store value over the dayjs the
   field prepares, and the store holds the API's `YYYY-MM-DD` string. Use a
   `custom` field whose input normalises string ↔ dayjs itself — `DateField` in
-  `AnimalDetail.tsx`.
+  `TeaDetail.tsx`.
 
 ## Verification before any PR
 

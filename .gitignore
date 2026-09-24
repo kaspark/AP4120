@@ -12,4 +12,12 @@ docs/book/
 !.claude/agents/
 !.claude/commands/
 
-# Paths that stay local. Add project-specific entries below.
+# Components developed privately in this checkout — never part of the public
+# template. Their integration points (changelog include, routes) must tolerate
+# the directories being absent.
+backend/src/main/java/ee/taltech/ite4120/library/
+backend/src/test/java/ee/taltech/ite4120/library/
+backend/src/main/resources/library/
+frontend/src/pages/library/
+docs/src/user-stories/LIBRARY-*
+docs/src/specifications/LIBRARY.*
