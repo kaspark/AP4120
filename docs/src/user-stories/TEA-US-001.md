@@ -8,7 +8,7 @@
 
 ## Context
 
-Three tables: the people who own tea, the classification list (black, green, herbal, oolong), and each stocked tea. A tea records the brand, dates, and how much is left.
+Three tables: the people who own tea, the classification list (black, green, herbal, oolong), and each stocked tea. A tea records the brand, dates, and how much is left. The demo cupboard opens with the five owners and twenty-six teas listed in [TEA.01](../specifications/TEA.01-tea-register.md#example-data).
 
 Out of scope: shop checkout, brewing recipes, and authentication beyond the course mock sign-in.
 

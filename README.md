@@ -68,7 +68,7 @@ repository secret (the same classic token as in § Tools).
 | `tea.category` | classification: Black, Green, Herbal, Oolong |
 | `tea.tea` | name, brand, classification, owner, purchase and expiry dates, quantity, unit |
 
-Demo row: Earl Grey, Twinings, 45 bags, bought 2026-09-01, expires 2027-09-01.
+Demo stock, under Liquibase context `demo`: Earl Grey and twenty-five further teas, five owners in all. The rows are the example-data tables in `docs/src/specifications/TEA.01-tea-register.md`, loaded by `90-demo-data.sql` and `91-demo-data.sql`.
 
 Rules of the road: `AGENTS.md`.
 

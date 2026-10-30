@@ -7,6 +7,9 @@
 # backend starts — there are deliberately no init scripts here. The database is
 # disposable by design: if it is ever in a strange state, destroy and recreate
 # (scripts/reset-db). Port 18520 keeps clear of anything else on your machine.
+#
+# The API and the UI are a separate stack (docker/compose.app.yaml, scripts/deploy)
+# so this file stays Postgres-only and scripts/run-backend does not build images.
 name: ite4120
 
 services:
