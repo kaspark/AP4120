@@ -1,0 +1,61 @@
+# Tea register, all three processes in Docker.
+#
+#   .\scripts\deploy.ps1          # Windows
+#   ./scripts/deploy.sh           # macOS / Linux
+#
+# Postgres comes from compose.yaml (same project name, same volume) so a database
+# you already started with scripts/run-backend is reused. Needs a GitHub token
+# with read:packages — see README § Tools › GitHub token. The token is a BuildKit
+# secret and is not baked into either image.
+
+name: ite4120
+
+include:
+  - compose.yaml
+
+services:
+  postgres:
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ../backend
+      secrets:
+        - gradle_properties
+    image: ite4120-tea-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      TEA_DB_URL: jdbc:postgresql://postgres:5432/tea
+      TEA_DB_USER: ${TEA_DB_USER:-tea}
+      TEA_DB_PASSWORD: ${TEA_DB_PASSWORD:-tea}
+    ports:
+      - "${TEA_PORT:-18440}:18440"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:18440/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 36
+      start_period: 90s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../frontend
+      secrets:
+        - npmrc
+    image: ite4120-tea-frontend
+    ports:
+      - "${TEA_UI_PORT:-18640}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+secrets:
+  gradle_properties:
+    file: ../.docker-secrets/gradle.properties
+  npmrc:
+    file: ../.docker-secrets/npmrc

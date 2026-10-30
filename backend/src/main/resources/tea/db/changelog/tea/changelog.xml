@@ -14,5 +14,6 @@
   <include file="tea/db/changelog/tea/02-category.sql"/>
   <include file="tea/db/changelog/tea/03-tea.sql"/>
   <include file="tea/db/changelog/tea/90-demo-data.sql"/>
+  <include file="tea/db/changelog/tea/91-demo-data.sql"/>
 
 </databaseChangeLog>

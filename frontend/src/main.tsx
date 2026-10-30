@@ -36,10 +36,13 @@ const store = createHelexStore();
  * Dev auth: auto-sign-in a mock user, no login screen, no Keycloak. The
  * MockAuthProvider sends `Authorization: Bearer <username>` on every request —
  * the backend's MockBearerAuthFilter (auth.mock.enabled=true) accepts it.
- * Production builds use the real AuthProvider instead.
+ * Production builds use the real AuthProvider, unless VITE_MOCK_AUTH=true
+ * (the Docker image sets that and runs the API with the local profile).
  */
+const mockAuth = import.meta.env.DEV || import.meta.env.VITE_MOCK_AUTH === 'true';
+
 const AuthGate = ({ children }: { children: ReactNode }) =>
-  import.meta.env.DEV ? (
+  mockAuth ? (
     <MockAuthProvider autoSignIn defaultUser="superadmin">
       {children}
     </MockAuthProvider>

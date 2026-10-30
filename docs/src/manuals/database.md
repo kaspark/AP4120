@@ -42,7 +42,7 @@ meets it:
 | Soft delete via `sys_status`; uniqueness enforced among active rows only | `animal_registry_code_ukey … where (sys_status = 'A')` |
 | Identifiers stored as `text`, never as numbers | `registry_code`, `owner_isikukood` |
 | Only Liquibase changesets create or change anything; released ones are never edited | `changelog.xml` + numbered files; `04-…` appends |
-| Demo rows under `context:demo`, so the app is usable out of the box | `90-demo-data.sql` |
+| Demo rows under `context:demo`, so the app is usable out of the box | `90-demo-data.sql`, `91-demo-data.sql` |
 | `scripts/check-changesets` clean, `./gradlew test` green from an empty database | — |
 
 A reference table (like `species`) counts as one of the three; data owned by an
@@ -91,8 +91,10 @@ changes nothing leaves the row untouched (the trigger compares `new = old`).
    `scripts/check-changesets` — run it before every PR that touches a
    changelog; it fails closed.
 
-Demo rows live in `90-demo-data.sql` under `context:demo` and are applied
-only because `application.yml` sets `spring.liquibase.contexts: demo`.
+Demo rows live in `90-demo-data.sql` and `91-demo-data.sql` under `context:demo` and are applied
+only because `application.yml` sets `spring.liquibase.contexts: demo`. The rows are the
+example-data tables in the [specification](../specifications/TEA.01-tea-register.md#example-data).
+`90-demo-data.sql` has already shipped, so the twenty-five further teas are an appended changeset.
 
 ## Working with the database
 
