@@ -3,7 +3,7 @@
 The data layer in one page: what is in the database, where it comes from, and
 how you change it. The long form, changeset by changeset, is the
 [Liquibase guide](../liquibase-guide.md); the data model itself is in the
-[specification](../specifications/TEA.01-tea-register.md#data-model).
+[specification](../specifications/PARK.01-parking-permits.md#data-model).
 
 ## What runs where
 
@@ -24,9 +24,10 @@ component's changelog. Your component becomes a third include.
 - **`core`** — the platform's, not yours. It provides `core.seq_id` (one id
   sequence for the whole database), the `core.sys_columns()` trigger that fills
   the `sys_*` columns, and `core.create_table_metadata()` that installs it.
-- **`tea`** — this register: `tea_user` (people), `category` (classification),
-  `tea` (the stock). Three tables, two
-  foreign keys — the assessment's data-layer minimum.
+- **`tea`** — this portal: `person` (people who hold or grant a permit),
+  `permit_type` (Resident, Visitor, Staff, Service), `permits` (holder, type,
+  start, end, who granted it, and why). Three tables, three foreign keys. The
+  schema name stayed `tea` because the first changesets had already shipped.
 - **`<yours>`** — one schema per component; boundaries in the database mirror
   boundaries in the code.
 
@@ -42,7 +43,7 @@ meets it:
 | Soft delete via `sys_status`; uniqueness enforced among active rows only | `animal_registry_code_ukey … where (sys_status = 'A')` |
 | Identifiers stored as `text`, never as numbers | `registry_code`, `owner_isikukood` |
 | Only Liquibase changesets create or change anything; released ones are never edited | `changelog.xml` + numbered files; `04-…` appends |
-| Demo rows under `context:demo`, so the app is usable out of the box | `90-demo-data.sql`, `91-demo-data.sql` |
+| Demo rows under `context:demo`, so the app is usable out of the box | `90-demo-data.sql`, `91-demo-data.sql`, `92-demo-permits.sql` |
 | `scripts/check-changesets` clean, `./gradlew test` green from an empty database | — |
 
 A reference table (like `species`) counts as one of the three; data owned by an
@@ -91,10 +92,10 @@ changes nothing leaves the row untouched (the trigger compares `new = old`).
    `scripts/check-changesets` — run it before every PR that touches a
    changelog; it fails closed.
 
-Demo rows live in `90-demo-data.sql` and `91-demo-data.sql` under `context:demo` and are applied
+Demo rows live in `90-demo-data.sql`, `91-demo-data.sql`, and `92-demo-permits.sql` under `context:demo` and are applied
 only because `application.yml` sets `spring.liquibase.contexts: demo`. The rows are the
-example-data tables in the [specification](../specifications/TEA.01-tea-register.md#example-data).
-`90-demo-data.sql` has already shipped, so the twenty-five further teas are an appended changeset.
+example-data tables in the [specification](../specifications/PARK.01-parking-permits.md#example-data).
+`90-demo-data.sql` has already shipped. `04-parking-permit.sql` is the appended changeset that turns those tables into permits, and `92-demo-permits.sql` loads the permit rows.
 
 ## Working with the database
 
@@ -136,6 +137,6 @@ needs nothing there.
    migrations run from empty.
 
 References: [Liquibase guide](../liquibase-guide.md) · the
-[data model](../specifications/TEA.01-tea-register.md#data-model) ·
+[data model](../specifications/PARK.01-parking-permits.md#data-model) ·
 `AGENTS.md` rules 5–6 · the files under
 `backend/src/main/resources/animals/db/changelog/animals/`.

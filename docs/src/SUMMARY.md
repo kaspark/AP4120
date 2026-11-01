@@ -6,5 +6,5 @@
 - [Manual · Database](manuals/database.md)
 - [Manual · REST API](manuals/rest-api.md)
 - [Manual · Frontend](manuals/frontend.md)
-- [User story · TEA-US-001](user-stories/TEA-US-001.md)
-- [Specification · TEA.01](specifications/TEA.01-tea-register.md)
+- [User story · PARK-US-001](user-stories/PARK-US-001.md)
+- [Specification · PARK.01](specifications/PARK.01-parking-permits.md)

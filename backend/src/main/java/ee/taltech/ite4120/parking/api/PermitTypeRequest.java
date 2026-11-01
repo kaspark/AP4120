@@ -1,19 +1,19 @@
-package ee.taltech.ite4120.tea.api;
+package ee.taltech.ite4120.parking.api;
 
-import ee.taltech.ite4120.tea.model.Category;
+import ee.taltech.ite4120.parking.model.PermitType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class CategoryRequest {
+public class PermitTypeRequest {
 
     @NotBlank
     @Size(max = 255)
     private String name;
 
-    public Category toModel() {
-        Category category = new Category();
-        category.setName(name);
-        return category;
+    public PermitType toModel() {
+        PermitType type = new PermitType();
+        type.setName(name);
+        return type;
     }
 
     public String getName() { return name; }

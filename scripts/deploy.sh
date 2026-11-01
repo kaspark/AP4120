@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and start the tea register in Docker: Postgres, API, and UI.
+# Build and start the parking permit portal in Docker: Postgres, API, and UI.
 # Usage: ./scripts/deploy.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

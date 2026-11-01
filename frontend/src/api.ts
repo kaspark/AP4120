@@ -1,26 +1,25 @@
-export interface TeaUser {
+export interface Person {
   id: number;
   name: string;
   email: string;
 }
 
-export interface Category {
+export interface PermitType {
   id: number;
   name: string;
 }
 
-export interface Tea {
+export interface Permit {
   id: number;
-  name: string;
-  brand: string;
-  categoryId: number;
-  ownerId: number;
-  purchaseDate: string;
-  expiryDate: string;
-  quantity: number;
-  unit: string;
-  categoryName?: string;
-  ownerName?: string;
+  permitTypeId: number;
+  holderId: number;
+  grantedById: number;
+  startDate: string;
+  endDate: string;
+  description: string;
+  permitTypeName?: string;
+  holderName?: string;
+  grantedByName?: string;
   sysStatus?: string;
   sysVersion?: number;
   sysCreatedAt?: string;
@@ -34,7 +33,7 @@ export interface QueryResult<T> {
   meta?: { total?: number };
 }
 
-export type TeaInput = Omit<Tea, 'id' | 'categoryName' | 'ownerName'>;
+export type PermitInput = Omit<Permit, 'id' | 'permitTypeName' | 'holderName' | 'grantedByName'>;
 
 function authHeaders(): Record<string, string> {
   const user = localStorage.getItem('helex_mock_user') || 'superadmin';
@@ -52,36 +51,36 @@ async function handle<T>(response: Response): Promise<T> {
   return response.json();
 }
 
-export const teaApi = {
-  list: (textContains?: string): Promise<QueryResult<Tea>> =>
+export const permitApi = {
+  list: (textContains?: string): Promise<QueryResult<Permit>> =>
     fetch(
-      '/api/teas?limit=50' + (textContains ? `&textContains=${encodeURIComponent(textContains)}` : ''),
+      '/api/permits?limit=50' + (textContains ? `&textContains=${encodeURIComponent(textContains)}` : ''),
       { headers: authHeaders() },
-    ).then((r) => handle<QueryResult<Tea>>(r)),
+    ).then((r) => handle<QueryResult<Permit>>(r)),
 
-  get: (id: number): Promise<Tea> =>
-    fetch(`/api/teas/${id}`, { headers: authHeaders() }).then((r) => handle<Tea>(r)),
+  get: (id: number): Promise<Permit> =>
+    fetch(`/api/permits/${id}`, { headers: authHeaders() }).then((r) => handle<Permit>(r)),
 
-  create: (body: TeaInput): Promise<Tea> =>
-    fetch('/api/teas', {
+  create: (body: PermitInput): Promise<Permit> =>
+    fetch('/api/permits', {
       method: 'POST',
       headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-    }).then((r) => handle<Tea>(r)),
+    }).then((r) => handle<Permit>(r)),
 
-  update: (id: number, body: TeaInput): Promise<Tea> =>
-    fetch(`/api/teas/${id}`, {
+  update: (id: number, body: PermitInput): Promise<Permit> =>
+    fetch(`/api/permits/${id}`, {
       method: 'PUT',
       headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-    }).then((r) => handle<Tea>(r)),
+    }).then((r) => handle<Permit>(r)),
 
   retire: (id: number): Promise<void> =>
-    fetch(`/api/teas/${id}`, { method: 'DELETE', headers: authHeaders() }).then((r) => handle<void>(r)),
+    fetch(`/api/permits/${id}`, { method: 'DELETE', headers: authHeaders() }).then((r) => handle<void>(r)),
 
-  categories: (): Promise<Category[]> =>
-    fetch('/api/categories', { headers: authHeaders() }).then((r) => handle<Category[]>(r)),
+  permitTypes: (): Promise<PermitType[]> =>
+    fetch('/api/permit-types', { headers: authHeaders() }).then((r) => handle<PermitType[]>(r)),
 
-  users: (): Promise<TeaUser[]> =>
-    fetch('/api/users', { headers: authHeaders() }).then((r) => handle<TeaUser[]>(r)),
+  persons: (): Promise<Person[]> =>
+    fetch('/api/persons', { headers: authHeaders() }).then((r) => handle<Person[]>(r)),
 };

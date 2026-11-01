@@ -1,7 +1,7 @@
-# AP4120 — Tea register
+# AP4120 — Parking permit portal
 
-A tea cupboard: who owns the tea, how it is classified, and what is in stock.
-Three tables — users, classification, tea — on the ITE4120 course stack
+Who may park, which kind of permit they hold, and who granted it.
+Three tables — people, permit types, permits — on the ITE4120 course stack
 (Spring Boot, Liquibase, React on `@helex/ui`).
 
 Everything Helex arrives as **published packages** — there is no platform source
@@ -9,9 +9,9 @@ checkout here and none is needed.
 
 | Layer | Where |
 | --- | --- |
-| Specification | `docs/src/specifications/TEA.01-tea-register.md` |
+| Specification | `docs/src/specifications/PARK.01-parking-permits.md` |
 | Data — PostgreSQL + Liquibase | `backend/src/main/resources/tea/db/` |
-| API — Spring Boot | `backend/src/main/java/ee/taltech/ite4120/tea/` |
+| API — Spring Boot | `backend/src/main/java/ee/taltech/ite4120/parking/` |
 | UI — React + @helex/ui | `frontend/src/pages/` |
 
 The UI wears the **TalTech theme** — the `taltech` pack from
@@ -51,7 +51,7 @@ rebuilds the schema on the next backend start.
 cd backend && ./gradlew test      # business tests, against a throwaway PostgreSQL
 ```
 
-`TeaBusinessRulesIT` is the specification's business tests, executable — and
+`ParkingBusinessRulesIT` is the specification's business tests, executable — and
 they also prove the migrations run clean from empty.
 
 The same tests, the frontend typecheck and build, and the changeset gate run on
@@ -64,17 +64,17 @@ repository secret (the same classic token as in § Tools).
 
 | Table | Holds |
 | --- | --- |
-| `tea.tea_user` | name and email |
-| `tea.category` | classification: Black, Green, Herbal, Oolong |
-| `tea.tea` | name, brand, classification, owner, purchase and expiry dates, quantity, unit |
+| `tea.person` | people who hold or grant a permit: name and email |
+| `tea.permit_type` | Resident, Visitor, Staff, Service |
+| `tea.permits` | holder, type, start and end dates, who granted it, and why |
 
-Demo stock, under Liquibase context `demo`: Earl Grey and twenty-five further teas, five owners in all. The rows are the example-data tables in `docs/src/specifications/TEA.01-tea-register.md`, loaded by `90-demo-data.sql` and `91-demo-data.sql`.
+Demo permits, under Liquibase context `demo`: five people and eight permits. The rows are the example-data tables in `docs/src/specifications/PARK.01-parking-permits.md`. People load from `90-demo-data.sql` and `91-demo-data.sql`; `04-parking-permit.sql` turns the shipped tea tables into this model; `92-demo-permits.sql` loads the permits.
 
 Rules of the road: `AGENTS.md`.
 
 ## Reading order
 
-`docs/src/README-docs.md` → the tea story and spec in `docs/src/` →
+`docs/src/README-docs.md` → the parking story and spec in `docs/src/` →
 the three manuals in `docs/src/manuals/` →
 `docs/src/liquibase-guide.md` → `docs/src/development-workflow.md`. Or serve the
 book with live reload: `scripts/run-docs` (`.sh` / `.ps1`).

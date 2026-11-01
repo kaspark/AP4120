@@ -1,4 +1,4 @@
-# Tea register, all three processes in Docker.
+# Parking permit portal, all three processes in Docker.
 #
 #   .\scripts\deploy.ps1          # Windows
 #   ./scripts/deploy.sh           # macOS / Linux

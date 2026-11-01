@@ -1,4 +1,4 @@
-# Build and start the tea register in Docker: Postgres, API, and UI.
+# Build and start the parking permit portal in Docker: Postgres, API, and UI.
 # Usage: .\scripts\deploy.ps1
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot

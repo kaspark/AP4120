@@ -1,11 +1,11 @@
-# Tea register. The local profile (application-local.yml) switches on mock auth.
+# Parking permit portal. The local profile (application-local.yml) switches on mock auth.
 
 server:
   port: ${TEA_PORT:18440}
 
 spring:
   application:
-    name: ite4120-tea-register
+    name: ite4120-parking-portal
   datasource:
     url: ${TEA_DB_URL:jdbc:postgresql://localhost:18520/tea}
     username: ${TEA_DB_USER:tea}

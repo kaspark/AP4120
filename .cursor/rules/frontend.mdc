@@ -6,7 +6,7 @@ alwaysApply: false
 
 Rules: [AGENTS.md](mdc:AGENTS.md) § Architecture conventions (UI) and § Known
 pitfalls (two Reacts, `MockAuthProvider` probes, `useAppNotification` identity).
-Reference pages: `frontend/src/pages/TeaList.tsx`, `TeaCreate.tsx`.
+Reference pages: `frontend/src/pages/PermitList.tsx`, `PermitCreate.tsx`.
 
 Typecheck before a PR:
 

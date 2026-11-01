@@ -2,9 +2,9 @@ package ee.taltech.ite4120.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import ee.taltech.ite4120.tea.model.Tea;
-import ee.taltech.ite4120.tea.model.TeaUser;
-import ee.taltech.ite4120.tea.service.TeaService;
+import ee.taltech.ite4120.parking.model.Permit;
+import ee.taltech.ite4120.parking.model.Person;
+import ee.taltech.ite4120.parking.service.PermitService;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +34,7 @@ class WriteAttributionIT {
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:18-alpine");
 
     @Autowired
-    TeaService teas;
+    PermitService permits;
 
     @AfterEach
     void signOut() {
@@ -44,15 +44,16 @@ class WriteAttributionIT {
     @Test
     void rowsRememberWhoCreatedAndWhoLastChangedThem() {
         signIn("alice");
-        Tea created = teas.create(tea());
+        Permit created = permits.create(permit());
         assertThat(created.getSysCreatedBy()).isEqualTo("alice");
         assertThat(created.getSysModifiedBy()).isEqualTo("alice");
 
         signIn("bob");
-        Tea update = tea();
-        update.setName("Renamed by Bob");
-        update.setOwnerId(created.getOwnerId());
-        Tea updated = teas.update(created.getId(), update);
+        Permit update = permit();
+        update.setDescription("Updated by Bob");
+        update.setHolderId(created.getHolderId());
+        update.setGrantedById(created.getGrantedById());
+        Permit updated = permits.update(created.getId(), update);
         assertThat(updated.getSysCreatedBy()).as("creation is history — it keeps the first author").isEqualTo("alice");
         assertThat(updated.getSysModifiedBy()).isEqualTo("bob");
     }
@@ -60,29 +61,27 @@ class WriteAttributionIT {
     @Test
     void outsideARequestTheApplicationItselfIsTheAuthor() {
         SecurityContextHolder.clearContext();
-        Tea created = teas.create(tea());
+        Permit created = permits.create(permit());
         assertThat(created.getSysCreatedBy()).isEqualTo(JdbcConfig.APPLICATION_USER);
     }
 
-    private Tea tea() {
-        TeaUser owner = teas.createUser(user("who-" + System.nanoTime() + "@example.com"));
-        Tea tea = new Tea();
-        tea.setName("Sencha");
-        tea.setBrand("Ippodo");
-        tea.setCategoryId(teas.requireCategory("Green").getId());
-        tea.setOwnerId(owner.getId());
-        tea.setPurchaseDate(LocalDate.of(2026, 1, 1));
-        tea.setExpiryDate(LocalDate.of(2027, 1, 1));
-        tea.setQuantity(20);
-        tea.setUnit("g");
-        return tea;
+    private Permit permit() {
+        Person holder = permits.createPerson(person("who-" + System.nanoTime() + "@example.com"));
+        Permit permit = new Permit();
+        permit.setPermitTypeId(permits.requirePermitType("Staff").getId());
+        permit.setHolderId(holder.getId());
+        permit.setGrantedById(holder.getId());
+        permit.setStartDate(LocalDate.of(2026, 1, 1));
+        permit.setEndDate(LocalDate.of(2027, 1, 1));
+        permit.setDescription("Staff parking by the main building.");
+        return permit;
     }
 
-    private static TeaUser user(String email) {
-        TeaUser user = new TeaUser();
-        user.setName("Attributed user");
-        user.setEmail(email);
-        return user;
+    private static Person person(String email) {
+        Person person = new Person();
+        person.setName("Attributed person");
+        person.setEmail(email);
+        return person;
     }
 
     private static void signIn(String user) {

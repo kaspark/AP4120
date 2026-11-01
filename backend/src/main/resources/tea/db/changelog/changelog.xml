@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Master changelog for the tea register.
+  Master changelog for the parking permit portal.
 
   The FIRST include is not ours: it ships inside the published
   org.helex.emr:commons-db-core jar and creates the shared `core` schema.

@@ -15,5 +15,7 @@
   <include file="tea/db/changelog/tea/03-tea.sql"/>
   <include file="tea/db/changelog/tea/90-demo-data.sql"/>
   <include file="tea/db/changelog/tea/91-demo-data.sql"/>
+  <include file="tea/db/changelog/tea/04-parking-permit.sql"/>
+  <include file="tea/db/changelog/tea/92-demo-permits.sql"/>
 
 </databaseChangeLog>

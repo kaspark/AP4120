@@ -1,4 +1,4 @@
-package ee.taltech.ite4120.tea.api;
+package ee.taltech.ite4120.parking.api;
 
 import org.helex.commons.exception.ApiClientException;
 import org.helex.commons.exception.ApiException;

@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { TeaList } from './pages/TeaList';
-import { TeaCreate } from './pages/TeaCreate';
-import { TeaDetail } from './pages/TeaDetail';
+import { PermitList } from './pages/PermitList';
+import { PermitCreate } from './pages/PermitCreate';
+import { PermitDetail } from './pages/PermitDetail';
 
 const componentRoutes = Object.values(
   import.meta.glob<{ routes: ReactElement[] }>('./pages/*/routes.tsx', { eager: true }),
@@ -10,10 +10,10 @@ const componentRoutes = Object.values(
 
 export const App = () => (
   <Routes>
-    <Route path="/" element={<Navigate to="/teas" replace />} />
-    <Route path="/teas" element={<TeaList />} />
-    <Route path="/teas/new" element={<TeaCreate />} />
-    <Route path="/teas/:id" element={<TeaDetail />} />
+    <Route path="/" element={<Navigate to="/permits" replace />} />
+    <Route path="/permits" element={<PermitList />} />
+    <Route path="/permits/new" element={<PermitCreate />} />
+    <Route path="/permits/:id" element={<PermitDetail />} />
     {componentRoutes}
   </Routes>
 );

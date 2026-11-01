@@ -1,9 +1,9 @@
-package ee.taltech.ite4120.tea.model;
+package ee.taltech.ite4120.parking.model;
 
 import java.time.OffsetDateTime;
 
-/** One person in {@code tea.tea_user}. */
-public class TeaUser {
+/** One person in {@code tea.person} — someone who can hold or grant a permit. */
+public class Person {
 
     private Long id;
     private String name;

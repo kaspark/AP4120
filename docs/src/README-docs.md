@@ -11,7 +11,7 @@ the release it describes, and readable by your AI agent.
 | `src/manuals/` | Three one-page manuals — database, REST API, frontend — each with the required minimum and where the example meets it |
 | `_templates/` | Copy these to start your own story and specification |
 
-This repository's component is the **tea register**: users, a classification
-list, and the teas they own. The story and the specification are
-[TEA-US-001](user-stories/TEA-US-001.md) and
-[TEA.01](specifications/TEA.01-tea-register.md).
+This repository's component is the **parking permit portal**: people, permit
+types, and the permits they hold. The story and the specification are
+[PARK-US-001](user-stories/PARK-US-001.md) and
+[PARK.01](specifications/PARK.01-parking-permits.md).
