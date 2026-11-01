@@ -14,6 +14,8 @@ checkout here and none is needed.
 | API — Spring Boot | `backend/src/main/java/ee/taltech/ite4120/parking/` |
 | UI — React + @helex/ui | `frontend/src/pages/` |
 
+`PARK.01` plus the other Markdown under `docs/` is the rebuild contract: tables, API, screens, and the exact failure messages. The manuals supply the platform patterns; where they still say `animals`, `PARK.01` wins.
+
 The UI wears the **TalTech theme** — the `taltech` pack from
 `helex-solutions/helex-extensions`, registered in `frontend/src/theme/taltech.ts`
 and selected by `VITE_THEME` in `frontend/.env` (the @helex/ui built-ins
