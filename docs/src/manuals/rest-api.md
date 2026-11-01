@@ -3,7 +3,7 @@
 The API layer in one page: how a request travels through the backend, what
 every list, error and identifier looks like, and how you add your own. The
 endpoint table itself is in the
-[specification](../specifications/TEA.01-tea-register.md#api);
+[specification](../specifications/PARK.01-parking-permits.md#api);
 the living contract is **Swagger UI at <http://localhost:18440/swagger-ui.html>**
 (OpenAPI JSON at `/v3/api-docs`).
 
@@ -145,5 +145,5 @@ own policy and its reason.
 
 References: `AnimalController.java` · `AnimalService.java` ·
 `AnimalRepository.java` · `ApiErrorHandler.java` ·
-[the API section of the spec](../specifications/TEA.01-tea-register.md#api)
+[the API section of the spec](../specifications/PARK.01-parking-permits.md#api)
 · `AGENTS.md` § Architecture conventions.

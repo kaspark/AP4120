@@ -2,7 +2,7 @@
 
 The UI layer in one page: how the React app is wired, which components you
 build with, and how you add your own pages. The screen-by-screen contract is
-in the [specification](../specifications/TEA.01-tea-register.md#ui).
+in the [specification](../specifications/PARK.01-parking-permits.md#ui).
 
 ## The component catalogue: Storybook
 
@@ -133,5 +133,5 @@ Two Reacts in the bundle produce "Invalid hook call": keep the `overrides` in
 Vite cache after dependency changes: delete `frontend/node_modules/.vite`.
 
 References: `AnimalList.tsx` · `AnimalCreate.tsx` · `api.ts` · `main.tsx` ·
-`vite.config.ts` · [the UI section of the spec](../specifications/TEA.01-tea-register.md#ui)
+`vite.config.ts` · [the UI section of the spec](../specifications/PARK.01-parking-permits.md#ui)
 · `AGENTS.md` · **[Storybook](https://emr.helex.dev/storybook)**.

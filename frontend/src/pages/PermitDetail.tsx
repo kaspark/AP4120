@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { DatePicker, Form, InputNumber } from 'antd';
+import { DatePicker, Form, Input } from 'antd';
 import dayjs from 'dayjs';
-import { CoffeeOutlined } from '@ant-design/icons';
+import { CarOutlined } from '@ant-design/icons';
 import { useDataController } from '@helex/core';
 import {
   AppCard,
@@ -14,7 +14,7 @@ import {
   useAppNotification,
   type ResourceFormSection,
 } from '@helex/ui';
-import { teaApi, type Category, type Tea, type TeaUser } from '../api';
+import { permitApi, type Permit, type PermitType, type Person } from '../api';
 
 const DateField = ({ value, onChange }: { value?: unknown; onChange?: (next: string | null) => void }) => (
   <DatePicker
@@ -24,68 +24,66 @@ const DateField = ({ value, onChange }: { value?: unknown; onChange?: (next: str
   />
 );
 
-const QuantityField = ({ value, onChange }: { value?: unknown; onChange?: (next: number | null) => void }) => (
-  <InputNumber
-    min={0}
-    style={{ width: '100%' }}
-    value={value == null || value === '' ? null : Number(value)}
-    onChange={(n) => onChange?.(n == null ? null : Number(n))}
+const DescriptionField = ({ value, onChange }: { value?: unknown; onChange?: (next: string) => void }) => (
+  <Input.TextArea
+    rows={3}
+    maxLength={200}
+    value={value == null ? '' : String(value)}
+    onChange={(e) => onChange?.(e.target.value)}
   />
 );
 
-export const TeaDetail = () => {
+export const PermitDetail = () => {
   const { id } = useParams();
-  const teaId = Number(id);
+  const permitId = Number(id);
   const navigate = useNavigate();
   const notify = useAppNotification();
-  const [form] = Form.useForm<Tea>();
-  const dc = useDataController<Tea>({} as Tea);
+  const [form] = Form.useForm<Permit>();
+  const dc = useDataController<Permit>({} as Permit);
   const [mode, setMode] = useState<'view' | 'edit'>('view');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [users, setUsers] = useState<TeaUser[]>([]);
+  const [types, setTypes] = useState<PermitType[]>([]);
+  const [persons, setPersons] = useState<Person[]>([]);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    Promise.all([teaApi.get(teaId), teaApi.categories(), teaApi.users()])
-      .then(([tea, categoryList, userList]) => {
+    Promise.all([permitApi.get(permitId), permitApi.permitTypes(), permitApi.persons()])
+      .then(([permit, typeList, personList]) => {
         if (cancelled) return;
-        dc.load(tea);
-        form.setFieldsValue(tea);
-        setCategories(categoryList);
-        setUsers(userList);
+        dc.load(permit);
+        form.setFieldsValue(permit);
+        setTypes(typeList);
+        setPersons(personList);
       })
       .catch((e) => {
-        notify.error('Could not load the tea', e.message);
-        navigate('/teas');
+        notify.error('Could not load the permit', e.message);
+        navigate('/permits');
       })
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teaId, notify]);
+  }, [permitId, notify]);
 
-  const save = async (values: Tea) => {
+  const save = async (values: Permit) => {
     setSaving(true);
     try {
-      const updated = await teaApi.update(teaId, {
-        name: values.name,
-        brand: values.brand,
-        categoryId: values.categoryId,
-        ownerId: values.ownerId,
-        purchaseDate: values.purchaseDate,
-        expiryDate: values.expiryDate,
-        quantity: Number(values.quantity),
-        unit: values.unit,
+      const updated = await permitApi.update(permitId, {
+        permitTypeId: values.permitTypeId,
+        holderId: values.holderId,
+        grantedById: values.grantedById,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        description: values.description,
       });
       dc.load(updated);
       form.setFieldsValue(updated);
       setMode('view');
-      notify.success('Saved', `${updated.name} · ${updated.brand}`);
+      notify.success('Saved', updated.holderName ?? 'Permit');
     } catch (e) {
       notify.error('Save failed', (e as Error).message);
     } finally {
@@ -96,81 +94,90 @@ export const TeaDetail = () => {
   const retire = async () => {
     setDeleting(true);
     try {
-      await teaApi.retire(teaId);
-      notify.success('Retired', dc.current.name);
-      navigate('/teas');
+      await permitApi.retire(permitId);
+      notify.success('Retired', dc.current.holderName ?? 'Permit');
+      navigate('/permits');
     } catch (e) {
       notify.error('Retire failed', (e as Error).message);
       setDeleting(false);
     }
   };
 
-  const sections: ResourceFormSection<Tea>[] = [
+  const personOptions = persons.map((p) => ({ value: p.id, label: p.name }));
+
+  const sections: ResourceFormSection<Permit>[] = [
     {
-      key: 'identity',
-      title: 'Tea',
+      key: 'who',
+      title: 'Permit',
       fields: [
-        { name: 'name', label: 'Name', type: 'text', required: true, rules: [{ required: true, max: 255 }] },
-        { name: 'brand', label: 'Brand', type: 'text', required: true, rules: [{ required: true, max: 255 }] },
         {
-          name: 'categoryId',
-          label: 'Classification',
+          name: 'holderId',
+          label: 'Holder',
           type: 'select',
           required: true,
-          options: categories.map((c) => ({ value: c.id, label: c.name })),
-          viewRender: (categoryId) => <AppTag>{categories.find((c) => c.id === categoryId)?.name ?? ''}</AppTag>,
+          options: personOptions,
+          viewRender: (holderId) => persons.find((p) => p.id === holderId)?.name ?? dc.current.holderName ?? '—',
         },
         {
-          name: 'ownerId',
-          label: 'Owner',
+          name: 'permitTypeId',
+          label: 'Permit type',
           type: 'select',
           required: true,
-          options: users.map((u) => ({ value: u.id, label: u.name })),
-          viewRender: (ownerId) => users.find((u) => u.id === ownerId)?.name ?? dc.current.ownerName ?? '—',
+          options: types.map((t) => ({ value: t.id, label: t.name })),
+          viewRender: (permitTypeId) => <AppTag>{types.find((t) => t.id === permitTypeId)?.name ?? ''}</AppTag>,
+        },
+        {
+          name: 'grantedById',
+          label: 'Granted by',
+          type: 'select',
+          required: true,
+          options: personOptions,
+          viewRender: (grantedById) => persons.find((p) => p.id === grantedById)?.name ?? dc.current.grantedByName ?? '—',
         },
       ],
     },
     {
-      key: 'stock',
-      title: 'Stock',
+      key: 'access',
+      title: 'Access',
       fields: [
         {
-          name: 'purchaseDate',
-          label: 'Purchase date',
+          name: 'startDate',
+          label: 'Start date',
           type: 'custom',
           required: true,
           render: ({ value, onChange }) => <DateField value={value} onChange={onChange} />,
           viewRender: (value) => (value ? <AppDate value={String(value)} /> : '—'),
         },
         {
-          name: 'expiryDate',
-          label: 'Expiry date',
+          name: 'endDate',
+          label: 'End date',
           type: 'custom',
           required: true,
-          tooltip: 'Must not be before the purchase date',
+          tooltip: 'Must not be before the start date',
           render: ({ value, onChange }) => <DateField value={value} onChange={onChange} />,
           viewRender: (value) => (value ? <AppDate value={String(value)} /> : '—'),
         },
         {
-          name: 'quantity',
-          label: 'Quantity',
+          name: 'description',
+          label: 'Why',
           type: 'custom',
           required: true,
-          render: ({ value, onChange }) => <QuantityField value={value} onChange={onChange} />,
+          rules: [{ required: true, max: 200 }],
+          render: ({ value, onChange }) => <DescriptionField value={value} onChange={onChange} />,
+          viewRender: (value) => (value ? String(value) : '—'),
         },
-        { name: 'unit', label: 'Unit', type: 'text', required: true, rules: [{ required: true, max: 30 }] },
       ],
     },
   ];
 
   return (
-    <ResourceForm<Tea>
+    <ResourceForm<Permit>
       mode={mode}
-      entityLabel="Tea"
-      icon={<CoffeeOutlined />}
-      name={dc.current.name}
-      subtitle={dc.current.brand}
-      chips={dc.current.categoryName ? <AppTag>{dc.current.categoryName}</AppTag> : undefined}
+      entityLabel="Permit"
+      icon={<CarOutlined />}
+      name={dc.current.holderName}
+      subtitle={dc.current.permitTypeName}
+      chips={dc.current.permitTypeName ? <AppTag>{dc.current.permitTypeName}</AppTag> : undefined}
       loading={loading}
       saving={saving}
       deleting={deleting}
@@ -178,7 +185,7 @@ export const TeaDetail = () => {
       dataController={dc}
       initialValues={dc.current}
       sections={sections}
-      onBack={() => navigate('/teas')}
+      onBack={() => navigate('/permits')}
       backTooltip="Back to the list"
       onEdit={() => setMode('edit')}
       onCancel={() => {
@@ -189,7 +196,7 @@ export const TeaDetail = () => {
       onSave={save}
       onDelete={retire}
       deleteLabel="Retire"
-      deleteConfirmText="Retire this tea? It stays in the database with status retired."
+      deleteConfirmText="Retire this permit? It stays in the database with status retired."
       sidebar={
         <AppCard title="Metadata" size="small">
           <FieldItem label="Created at">

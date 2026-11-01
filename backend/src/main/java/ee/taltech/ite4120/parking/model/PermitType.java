@@ -1,7 +1,7 @@
-package ee.taltech.ite4120.tea.model;
+package ee.taltech.ite4120.parking.model;
 
-/** One row of {@code tea.category} — the tea classification. */
-public class Category {
+/** One row of {@code tea.permit_type} — Resident, Visitor, Staff, or Service. */
+public class PermitType {
 
     private Long id;
     private String name;

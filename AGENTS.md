@@ -1,4 +1,4 @@
-# AGENTS.md — ITE4120 tea register
+# AGENTS.md — ITE4120 parking permit portal
 
 Canonical instructions for AI coding agents working in this repository — the
 single source of truth, the same rules for every tool. Read on startup by
@@ -26,7 +26,7 @@ break.
 A course template: a working Spring Boot + React application consuming the Helex
 platform as **published libraries** (`org.helex.emr:*` from GitHub Packages,
 `@helex/ui` and friends from GitHub npm). This repository's component is the
-**tea register** (`ee.taltech.ite4120.tea`): users, classifications, and teas.
+**parking permit portal** (`ee.taltech.ite4120.parking`): people, permit types, and permits. The PostgreSQL schema is still named `tea` — the first Liquibase changesets shipped under that name and are not edited.
 
 ## Process rules (non-negotiable)
 
@@ -67,7 +67,7 @@ platform as **published libraries** (`org.helex.emr:*` from GitHub Packages,
   `ee.taltech.ite4120.config`, not inside a component.
 - UI: every input is an existing `@helex/ui` or antd component. Lists on
   `ResourceList`, record pages on `ResourceForm` + `useDataController`
-  (`TeaDetail.tsx` is the example).
+  (`PermitDetail.tsx` is the example).
 
 ## Known pitfalls (earned the hard way)
 
@@ -104,7 +104,7 @@ platform as **published libraries** (`org.helex.emr:*` from GitHub Packages,
   function`): antd's `Form.Item` injects the form-store value over the dayjs the
   field prepares, and the store holds the API's `YYYY-MM-DD` string. Use a
   `custom` field whose input normalises string ↔ dayjs itself — `DateField` in
-  `TeaDetail.tsx`.
+  `PermitDetail.tsx`.
 
 ## Verification before any PR
 
