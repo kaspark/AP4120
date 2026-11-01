@@ -15,3 +15,8 @@ This repository's component is the **parking permit portal**: people, permit
 types, and the permits they hold. The story and the specification are
 [PARK-US-001](user-stories/PARK-US-001.md) and
 [PARK.01](specifications/PARK.01-parking-permits.md).
+
+These Markdown files are enough to rebuild that portal. [PARK.01](specifications/PARK.01-parking-permits.md)
+is the product contract (tables, API, screens, messages, demo rows). The three
+manuals and the [Liquibase guide](liquibase-guide.md) supply the platform
+patterns. Where a manual still says `animals`, follow PARK.01 instead.
