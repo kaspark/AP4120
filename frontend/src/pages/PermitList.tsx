@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { AppButtonPrimary, AppLink, AppTag, ResourceList, useAppNotification, type ResourceListColumn } from '@helex/ui';
 import { permitApi, type Permit } from '../api';
+import './PermitList.css';
 
 export const PermitList = () => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ export const PermitList = () => {
         </AppLink>
       ),
     },
+    { key: 'licensePlate', title: 'License plate', dataIndex: 'licensePlate' },
     {
       key: 'permitTypeName',
       title: 'Permit type',
@@ -60,35 +62,37 @@ export const PermitList = () => {
     { key: 'startDate', title: 'Start', dataIndex: 'startDate' },
     { key: 'endDate', title: 'End', dataIndex: 'endDate' },
     { key: 'grantedByName', title: 'Granted by', dataIndex: 'grantedByName' },
-    { key: 'description', title: 'Reason', dataIndex: 'description' },
   ];
 
   return (
-    <ResourceList<Permit>
-      title="Permits"
-      columns={columns}
-      dataSource={permits}
-      rowKey="id"
-      loading={loading}
-      search={{ value: search, onChange: setSearch, placeholder: 'Holder, granter, or reason…' }}
-      actions={
-        <AppButtonPrimary icon={<PlusOutlined />} onClick={() => navigate('/permits/new')}>
-          Add permit
-        </AppButtonPrimary>
-      }
-      detailView={{
-        selectedRecord: selected,
-        onSelectedRecordChange: setSelected,
-        title: 'Permit',
-        render: (permit) => (
-          <div style={{ display: 'grid', gap: 8 }}>
-            <div><b>{permit.holderName}</b> · {permit.permitTypeName}</div>
-            <div>Granted by {permit.grantedByName}</div>
-            <div>{permit.startDate} – {permit.endDate}</div>
-            <div>{permit.description}</div>
-          </div>
-        ),
-      }}
-    />
+    <div className="permit-list">
+      <ResourceList<Permit>
+        title="Permits"
+        columns={columns}
+        dataSource={permits}
+        rowKey="id"
+        loading={loading}
+        search={{ value: search, onChange: setSearch, placeholder: 'Holder, plate, granter, or reason…' }}
+        actions={
+          <AppButtonPrimary icon={<PlusOutlined />} onClick={() => navigate('/permits/new')}>
+            Add permit
+          </AppButtonPrimary>
+        }
+        detailView={{
+          selectedRecord: selected,
+          onSelectedRecordChange: setSelected,
+          title: 'Permit',
+          render: (permit) => (
+            <div style={{ display: 'grid', gap: 8 }}>
+              <div><b>{permit.holderName}</b> · {permit.permitTypeName}</div>
+              <div>{permit.licensePlate}</div>
+              <div>Granted by {permit.grantedByName}</div>
+              <div>{permit.startDate} – {permit.endDate}</div>
+              <div>{permit.description}</div>
+            </div>
+          ),
+        }}
+      />
+    </div>
   );
 };

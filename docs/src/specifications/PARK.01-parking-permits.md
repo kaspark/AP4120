@@ -18,7 +18,7 @@ Out of scope: payment, licence-plate recognition, and authentication beyond the 
 
 The Java package is `ee.taltech.ite4120.parking` (controller → service → repository). The React pages are `PermitList`, `PermitCreate`, and `PermitDetail`. The browser title and the shell name are **Parking permits**.
 
-The PostgreSQL schema is still named `tea`. Build the tables below in that schema. If a database already contains the shipped tea changesets (`tea.tea_user`, `tea.category`, `tea.tea`), do not edit those changesets. Append one changeset that reshapes them into the target schema, then a `context:demo` changeset for the permit rows. A database that has no tea history is created directly as the target schema.
+The PostgreSQL schema is `parking`. If a database already contains the shipped tea changesets (`tea.tea_user`, `tea.category`, `tea.tea`), do not edit those changesets. Append one changeset that reshapes them, then a `context:demo` changeset for the permit rows, then `06-schema-parking.sql` (`ite4120:tea-06-schema-parking`), which renames schema `tea` to `parking`. After that rename, `93-demo-permit-plates.sql` (`ite4120:tea-93-demo-permit-plates`, `context:demo`) sets `license_plate` on the eight demo permits. `92-demo-permits.sql` has already shipped and does not write a plate. A database with no tea history follows that same changelog.
 
 Example record. The ids in this body are assigned by the database; the seed below names the permit type, the holder, and the granter instead.
 
@@ -38,7 +38,7 @@ A saved permit also returns the joined names and the platform columns: `permitTy
 
 ## Example data
 
-Demo rows load only when Liquibase runs with context `demo`. People are inserted before the permits that name them. The permit seed stores foreign keys: `permit_type_id` by type name, `holder_id` by the holder's email, `granted_by_id` by the granter's email, among active rows only.
+Demo rows load only when Liquibase runs with context `demo`. People are inserted before the permits that name them. The permit seed stores foreign keys: `permit_type_id` by type name, `holder_id` by the holder's email, `granted_by_id` by the granter's email, among active rows only. That insert does not set a plate. `93-demo-permit-plates.sql` sets it afterwards, matching the holder's email and the description, and only where the plate is still empty.
 
 | Name | Email |
 | --- | --- |
@@ -50,37 +50,37 @@ Demo rows load only when Liquibase runs with context `demo`. People are inserted
 
 Permit types, always seeded (not only under `demo`): Resident, Visitor, Staff, Service.
 
-| Holder | Type | Granted by | Start | End | Why |
-| --- | --- | --- | --- | --- | --- |
-| Mari Tamm | Resident | Eva Saar | 2026-09-01 | 2027-08-31 | Lives at Akadeemia tee 15 and needs a resident bay. |
-| Jaan Kask | Staff | Eva Saar | 2026-01-06 | 2026-12-31 | ICT faculty staff, daytime parking by the main building. |
-| Liis Rebane | Visitor | Jaan Kask | 2026-03-02 | 2026-03-06 | Guest lecture week, visitor bay at the library. |
-| Karl Põder | Service | Eva Saar | 2026-04-01 | 2026-10-31 | Maintenance contractor working on the heating plant. |
-| Eva Saar | Staff | Jaan Kask | 2026-01-06 | 2026-12-31 | Campus services staff who also grants other permits. |
-| Mari Tamm | Visitor | Karl Põder | 2026-11-10 | 2026-11-12 | Extra visitor permit for a family weekend on campus. |
-| Liis Rebane | Resident | Eva Saar | 2026-08-01 | 2027-07-31 | Moved into student housing and needs an overnight bay. |
-| Karl Põder | Resident | Jaan Kask | 2026-02-01 | 2027-01-31 | Resident bay next to the sports hall. |
+| Holder | License plate | Type | Granted by | Start | End | Why |
+| --- | --- | --- | --- | --- | --- | --- |
+| Mari Tamm | 123 ABC | Resident | Eva Saar | 2026-09-01 | 2027-08-31 | Lives at Akadeemia tee 15 and needs a resident bay. |
+| Jaan Kask | 456 DEF | Staff | Eva Saar | 2026-01-06 | 2026-12-31 | ICT faculty staff, daytime parking by the main building. |
+| Liis Rebane | 789 GHI | Visitor | Jaan Kask | 2026-03-02 | 2026-03-06 | Guest lecture week, visitor bay at the library. |
+| Karl Põder | 234 JKL | Service | Eva Saar | 2026-04-01 | 2026-10-31 | Maintenance contractor working on the heating plant. |
+| Eva Saar | 567 MNO | Staff | Jaan Kask | 2026-01-06 | 2026-12-31 | Campus services staff who also grants other permits. |
+| Mari Tamm | 890 PQR | Visitor | Karl Põder | 2026-11-10 | 2026-11-12 | Extra visitor permit for a family weekend on campus. |
+| Liis Rebane | 321 STU | Resident | Eva Saar | 2026-08-01 | 2027-07-31 | Moved into student housing and needs an overnight bay. |
+| Karl Põder | 654 VWX | Resident | Jaan Kask | 2026-02-01 | 2027-01-31 | Resident bay next to the sports hall. |
 
-On a database that already ran the tea demo changesets, those changesets keep the five people and also insert tea stock. The reshape changeset deletes the tea stock and the old classifications (Black, Green, Herbal, Oolong), then the demo permit changeset inserts the eight rows above. The people are not deleted.
+On a database that already ran the tea demo changesets, those changesets keep the five people and also insert tea stock. The reshape changeset deletes the tea stock and the old classifications (Black, Green, Herbal, Oolong), then the demo permit changeset inserts the eight rows above. The people are not deleted. `06-schema-parking.sql` then renames the schema, so these rows are `parking.person` and `parking.permits`. `93-demo-permit-plates.sql` then writes the license plate on each of those eight rows.
 
 ## Data model
 
 | Table | Field | Type | Rules |
 | --- | --- | --- | --- |
-| `tea.person` | `id` PK | bigint | from `core.seq_id`. A person who holds a permit, and who may grant one |
+| `parking.person` | `id` PK | bigint | from `core.seq_id`. A person who holds a permit, and who may grant one |
 | | `name` | text | required, at most 255 characters |
 | | `email` | text | required, a valid email, at most 255 characters; unique among active rows, case-insensitive |
 | | `sys_*` | — | `sys_status`, `sys_version`, `sys_created_at`, `sys_created_by`, `sys_modified_at`, `sys_modified_by`. The platform trigger fills them. Application code does not write them |
-| `tea.permit_type` | `id` PK | bigint | from `core.seq_id` |
+| `parking.permit_type` | `id` PK | bigint | from `core.seq_id` |
 | | `name` | text | required, at most 255 characters; unique among active rows, case-insensitive. Seeded: Resident, Visitor, Staff, Service |
 | | `sys_*` | — | same platform columns |
-| `tea.permits` | `id` PK | bigint | from `core.seq_id` |
-| | `permit_type_id` | bigint | required; FK → `tea.permit_type`. Active rows only |
-| | `holder_id` | bigint | required; FK → `tea.person`. The person the permit is for |
-| | `granted_by_id` | bigint | required; FK → `tea.person`. Who granted the access |
+| `parking.permits` | `id` PK | bigint | from `core.seq_id` |
+| | `permit_type_id` | bigint | required; FK → `parking.permit_type`. Active rows only |
+| | `holder_id` | bigint | required; FK → `parking.person`. The person the permit is for |
+| | `granted_by_id` | bigint | required; FK → `parking.person`. Who granted the access |
 | | `start_date`, `end_date` | date | required; `end_date >= start_date` |
 | | `description` | text | required; 1 to 200 characters. Why the parking was granted. The screen stores ticked reasons joined by `; `, and any "Other" text as one more part |
-| | `license_plate` | text | required on create and update; 1 to 20 characters after trimming. Nullable only for permits that already existed before the column. A string, never a number |
+| | `license_plate` | text | required on create and update; 1 to 20 characters after trimming. Nullable in the table only so a permit that already existed before the column could be migrated. The eight demo rows receive a plate from `93-demo-permit-plates.sql`. A string, never a number |
 | | `sys_*` | — | same platform columns. Retire sets `sys_status` to `C` |
 
 Call `core.create_table_metadata` on each business table. Partial indexes, `where (sys_status = 'A')`:
@@ -94,7 +94,7 @@ Checks: `end_date >= start_date`, and `char_length(description) between 1 and 20
 Target shape, for a database that is not migrating an older tea table:
 
 ```sql
-create table tea.person (
+create table parking.person (
     id                  bigint default nextval('core.seq_id') not null,
     name                text not null,
     email               text not null,
@@ -107,7 +107,7 @@ create table tea.person (
     constraint person_pk primary key (id)
 );
 
-create table tea.permit_type (
+create table parking.permit_type (
     id                  bigint default nextval('core.seq_id') not null,
     name                text not null,
     sys_status          char(1),
@@ -119,7 +119,7 @@ create table tea.permit_type (
     constraint permit_type_pk primary key (id)
 );
 
-create table tea.permits (
+create table parking.permits (
     id                  bigint default nextval('core.seq_id') not null,
     permit_type_id      bigint not null,
     holder_id           bigint not null,
@@ -135,9 +135,9 @@ create table tea.permits (
     sys_modified_at     timestamptz,
     sys_modified_by     text,
     constraint permit_pk primary key (id),
-    constraint permit_type_fk foreign key (permit_type_id) references tea.permit_type (id),
-    constraint permit_holder_fk foreign key (holder_id) references tea.person (id),
-    constraint permit_granted_by_fk foreign key (granted_by_id) references tea.person (id),
+    constraint permit_type_fk foreign key (permit_type_id) references parking.permit_type (id),
+    constraint permit_holder_fk foreign key (holder_id) references parking.person (id),
+    constraint permit_granted_by_fk foreign key (granted_by_id) references parking.person (id),
     constraint permit_dates_chk check (end_date >= start_date),
     constraint permit_description_chk check (char_length(description) between 1 and 200),
     constraint permit_license_plate_chk check (license_plate is null or char_length(license_plate) between 1 and 20)
@@ -163,7 +163,7 @@ Every error is `application/problem+json`. 400 is the caller's fault, 404 is mis
 | `GET /api/persons/{id}` | — | 200, one active person | 404 `person {id} not found` |
 | `POST /api/persons` | `{ "name": "Ada", "email": "ada@example.com" }` | **201**, `Location: /api/persons/{id}` | 400 `name is required` or `email is required` · 409 `an active person with email {email} already exists` |
 
-`textContains` matches, case-insensitively, the description, the holder name, or the granter name. `permitTypeId` and `holderId` filter the corresponding columns. Unknown ids on a write are 400:
+`textContains` matches, case-insensitively, the description, the holder name, the granter name, or the license plate. `permitTypeId` and `holderId` filter the corresponding columns. Unknown ids on a write are 400:
 
 - `unknown permitTypeId: {id}`
 - `unknown holderId: {id}`
@@ -179,7 +179,7 @@ Permit validation, in this order, before the database constraints:
 - `licensePlate is required` when it is missing or blank
 - `licensePlate must be at most 20 characters`
 
-The request body rejects a missing field, a description longer than 200 characters, a license plate longer than 20 characters, a person name or email longer than 255 characters, and an email that is not an email address. Those answers are 400 with title `Validation failed`.
+The request body rejects a missing field, a description longer than 200 characters, a license plate longer than 20 characters, an end date before the start date, a person name or email longer than 255 characters, and an email that is not an email address. Those answers are 400 with title `Validation failed`. A missing plate is `licensePlate: must not be blank`. An end date before the start is `endDate: must not be before startDate`, the same kind of field error. The form shows `Must not be before the start date` on the end date and does not send the request.
 
 ## UI
 
@@ -187,9 +187,9 @@ The request body rejects a missing field, a description longer than 200 characte
 
 | Screen | Element | Component | Rules |
 | --- | --- | --- | --- |
-| Permit list `/permits` | table | `ResourceList` | title **Permits**. A TalTech accent bar (magenta, berry, violet) sits above the page. First column **No.** is the row number `1.` `2.` `3.` in the order the loaded rows are shown, and it cannot be hidden. **Permit holder** links to `/permits/{id}`. Then **Permit type** (`AppTag`), **Start**, **End**, **Granted by**, **Reason**. Search placeholder `Holder, granter, or reason…`, debounced 250 ms, sent as `textContains` with `limit=50`. **Add permit** goes to `/permits/new`. The detail drawer shows holder, type, granter, the two dates, and the reason |
-| Add permit `/permits/new` | form | antd `Form` | **Permit holder**, **License plate number** (required, max 20), **Permit type**, **Granted by** (antd `Select`, people labelled `name · email`), **Start date**, **End date** (antd `DatePicker`; the end date notes that it must not be before the start), **Select reason:** (antd `Checkbox` list: District 1 resident, District 2 resident, TalTech staff, TalTech student, Contractor, Maintenance staff, and **Other:** with a text field). Ticked reasons and the Other text are joined with `; ` and saved as `description` (required, max 200). Cancel returns to `/permits`. Success returns to the list |
-| Permit page `/permits/{id}` | view / edit | `ResourceForm` | entity label **Permit**, name is the holder, subtitle and chip are the type. The permit card is titled **Parking permit**. Fields: permit holder, license plate number, permit type, granted by, start date, end date, reason. Dates are a `custom` field that converts `YYYY-MM-DD` to dayjs and back (`DateField`). Reason is the same checkbox list as the add form, max 200. **Remove** soft-deletes and returns to the list. Confirm: `Remove this permit? It stays in the database with status retired.` The sidebar shows created at / by, modified at / by, and version |
+| Permit list `/permits` | table | `ResourceList` | title **Permits**. A TalTech accent bar (magenta, berry, violet) sits above the page. First column **No.** is the row number `1.` `2.` `3.` in the order the loaded rows are shown, and it cannot be hidden. **Permit holder** links to `/permits/{id}`. Then **License plate**, **Permit type** (`AppTag`), **Start**, **End**, **Granted by**. The reason is not a table column. Search placeholder `Holder, plate, granter, or reason…`, debounced 250 ms, sent as `textContains` with `limit=50`. **Add permit** goes to `/permits/new`. The detail panel is a full-height column beside the table, and the table scrolls sideways when the columns do not fit. It shows holder, plate, type, granter, the two dates, and the reason |
+| Add permit `/permits/new` | form | antd `Form` | **Permit holder**, **License plate number** (required, max 20), **Permit type**, **Granted by** (antd `Select`, people labelled `name · email`), **Start date**, **End date** (antd `DatePicker`; an end date before the start is refused on the end date with `Must not be before the start date`, the same way a missing license plate is refused on its field), **Select reason:** (antd `Checkbox` list: District 1 resident, District 2 resident, TalTech staff, TalTech student, Contractor, Maintenance staff, and **Other:** with a text field). Ticked reasons and the Other text are joined with `; ` and saved as `description` (required, max 200). Cancel returns to `/permits`. Success returns to the list |
+| Permit page `/permits/{id}` | view / edit | `ResourceForm` | entity label **Permit**, name is the holder, subtitle and chip are the type. The permit card is titled **Parking permit**. Fields: permit holder, license plate number, permit type, granted by, start date, end date, reason. Dates are a `custom` field that converts `YYYY-MM-DD` to dayjs and back (`DateField`). An end date before the start is refused on the end date with `Must not be before the start date`, the same way a missing license plate is refused on its field, and the form does not save. Reason is the same checkbox list as the add form, max 200. **Remove** soft-deletes and returns to the list. Confirm: `Remove this permit? It stays in the database with status retired.` The sidebar shows created at / by, modified at / by, and version |
 
 A missing permit on the record page reports the error and returns to the list.
 
@@ -201,3 +201,5 @@ These are the executable tests. They call the service, and they also prove the m
 2. **The reason is at most 200 characters.** Given a description of 201 characters, when it is granted, then the grant is refused with "description must be at most 200 characters".
 3. **A license plate is required.** Given a permit whose plate is missing or blank, when it is granted, then the grant is refused with "licensePlate is required".
 4. **A license plate is at most 20 characters.** Given a plate of 21 characters, when it is granted, then the grant is refused with "licensePlate must be at most 20 characters".
+5. **An email is unique among active people.** Given an active person with an email, when a second person claims it, then the registration conflicts with a message containing "already exists".
+6. **Search finds a license plate.** Given a permit with plate "ZX9 QWE", when the list is searched for "zx9", then that permit is among the results.

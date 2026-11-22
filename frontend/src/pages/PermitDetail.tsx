@@ -15,6 +15,7 @@ import {
   type ResourceFormSection,
 } from '@helex/ui';
 import { permitApi, type Permit, type PermitType, type Person } from '../api';
+import { END_BEFORE_START, endDateRule, endNotBeforeStart } from '../dates';
 import { ReasonPicker } from '../reasons';
 
 const DateField = ({ value, onChange }: { value?: unknown; onChange?: (next: string | null) => void }) => (
@@ -62,6 +63,10 @@ export const PermitDetail = () => {
   }, [permitId, notify]);
 
   const save = async (values: Permit) => {
+    if (!endNotBeforeStart(values.startDate, values.endDate)) {
+      form.setFields([{ name: 'endDate', errors: [END_BEFORE_START] }]);
+      return;
+    }
     setSaving(true);
     try {
       const updated = await permitApi.update(permitId, {
@@ -162,7 +167,8 @@ export const PermitDetail = () => {
           label: 'End date',
           type: 'custom',
           required: true,
-          tooltip: 'Must not be before the start date',
+          rules: [endDateRule],
+          tooltip: END_BEFORE_START,
           render: ({ value, onChange }) => <DateField value={value} onChange={onChange} />,
           viewRender: (value) => (value ? <AppDate value={String(value)} /> : '—'),
         },

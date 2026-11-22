@@ -2,6 +2,7 @@ package ee.taltech.ite4120.parking;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import ee.taltech.ite4120.parking.dto.PermitQueryParams;
 import ee.taltech.ite4120.parking.model.Permit;
 import ee.taltech.ite4120.parking.model.Person;
 import ee.taltech.ite4120.parking.service.PermitService;
@@ -70,6 +71,30 @@ class ParkingBusinessRulesIT {
         assertThatThrownBy(() -> permits.create(permit))
                 .isInstanceOf(ApiClientException.class)
                 .hasMessageContaining("licensePlate must be at most 20 characters");
+    }
+
+    @Test
+    void searchFindsALicensePlate() {
+        Permit permit = permit();
+        permit.setLicensePlate("ZX9 QWE");
+        Permit created = permits.create(permit);
+
+        PermitQueryParams query = new PermitQueryParams();
+        query.setTextContains("zx9");
+
+        assertThat(permits.search(query).getData())
+                .extracting(Permit::getId)
+                .contains(created.getId());
+    }
+
+    @Test
+    void anEmailIsUniqueAmongActivePersons() {
+        Person first = permits.createPerson(person("ada@example.com"));
+        assertThat(first.getId()).isNotNull();
+
+        assertThatThrownBy(() -> permits.createPerson(person("ada@example.com")))
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining("already exists");
     }
 
     private Permit permit() {
