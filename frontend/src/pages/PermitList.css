@@ -1,0 +1,25 @@
+/* The details column is a short card (align-self: flex-start), so the rest of
+   that column is the empty page and reads as a panel covering the table.
+   Stretch it to the list and let the table scroll instead of wrapping. */
+.permit-list > div {
+  background: #fff;
+  min-height: calc(100vh - 4px);
+}
+
+.permit-list [aria-label='Resize details panel'] + div {
+  align-self: stretch !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.permit-list [aria-label='Resize details panel'] + div > .ant-card {
+  min-height: 100%;
+}
+
+.permit-list .ant-table-content {
+  overflow-x: auto;
+}
+
+.permit-list .ant-table-cell {
+  white-space: nowrap;
+}

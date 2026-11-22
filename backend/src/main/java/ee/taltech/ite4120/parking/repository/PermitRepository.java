@@ -18,10 +18,10 @@ public class PermitRepository extends BaseRepository {
 
     private static final String SELECT = """
             select p.*, t.name as permit_type_name, h.name as holder_name, g.name as granted_by_name
-              from tea.permits p
-              join tea.permit_type t on t.id = p.permit_type_id
-              join tea.person h on h.id = p.holder_id
-              join tea.person g on g.id = p.granted_by_id
+              from parking.permits p
+              join parking.permit_type t on t.id = p.permit_type_id
+              join parking.person h on h.id = p.holder_id
+              join parking.person g on g.id = p.granted_by_id
             """;
 
     private static final Map<String, String> SORT = Map.of(
@@ -44,10 +44,10 @@ public class PermitRepository extends BaseRepository {
     private Integer count(PermitQueryParams p) {
         SqlBuilder sb = new SqlBuilder("""
                 select count(1)
-                  from tea.permits p
-                  join tea.permit_type t on t.id = p.permit_type_id
-                  join tea.person h on h.id = p.holder_id
-                  join tea.person g on g.id = p.granted_by_id
+                  from parking.permits p
+                  join parking.permit_type t on t.id = p.permit_type_id
+                  join parking.person h on h.id = p.holder_id
+                  join parking.person g on g.id = p.granted_by_id
                  where p.sys_status = 'A'""");
         sb.append(filter(p));
         return queryForObject(sb.getSql(), Integer.class, sb.getParams());
@@ -73,7 +73,8 @@ public class PermitRepository extends BaseRepository {
         SqlBuilder sb = new SqlBuilder();
         if (p.getTextContains() != null && !p.getTextContains().isBlank()) {
             String like = "%" + p.getTextContains().toLowerCase() + "%";
-            sb.and("(lower(p.description) like ? or lower(h.name) like ? or lower(g.name) like ?)", like, like, like);
+            sb.and("(lower(p.description) like ? or lower(h.name) like ? or lower(g.name) like ? or lower(p.license_plate) like ?)",
+                    like, like, like, like);
         }
         sb.appendIfNotNull("and p.permit_type_id = ?", p.getPermitTypeId());
         sb.appendIfNotNull("and p.holder_id = ?", p.getHolderId());
@@ -82,7 +83,7 @@ public class PermitRepository extends BaseRepository {
 
     public Long insert(Permit permit) {
         String sql = """
-                insert into tea.permits
+                insert into parking.permits
                     (permit_type_id, holder_id, granted_by_id, start_date, end_date, description, license_plate)
                 values (?, ?, ?, ?, ?, ?, ?)
                 returning id""";
@@ -93,7 +94,7 @@ public class PermitRepository extends BaseRepository {
 
     public boolean update(Permit permit) {
         String sql = """
-                update tea.permits
+                update parking.permits
                    set permit_type_id = ?, holder_id = ?, granted_by_id = ?,
                        start_date = ?, end_date = ?, description = ?, license_plate = ?
                  where id = ? and sys_status = 'A'""";
@@ -105,55 +106,55 @@ public class PermitRepository extends BaseRepository {
 
     public boolean retire(Long id) {
         return jdbcTemplate.update(
-                "update tea.permits set sys_status = 'C' where id = ? and sys_status = 'A'", id) == 1;
+                "update parking.permits set sys_status = 'C' where id = ? and sys_status = 'A'", id) == 1;
     }
 
     public boolean permitTypeExists(Long id) {
         Integer n = queryForObject(
-                "select count(1) from tea.permit_type where id = ? and sys_status = 'A'", Integer.class, id);
+                "select count(1) from parking.permit_type where id = ? and sys_status = 'A'", Integer.class, id);
         return n != null && n > 0;
     }
 
     public boolean personExists(Long id) {
         Integer n = queryForObject(
-                "select count(1) from tea.person where id = ? and sys_status = 'A'", Integer.class, id);
+                "select count(1) from parking.person where id = ? and sys_status = 'A'", Integer.class, id);
         return n != null && n > 0;
     }
 
     public List<PermitType> permitTypes() {
         return getBeans(
-                "select t.* from tea.permit_type t where t.sys_status = 'A' order by t.name", typeBp);
+                "select t.* from parking.permit_type t where t.sys_status = 'A' order by t.name", typeBp);
     }
 
     public PermitType loadPermitTypeByName(String name) {
         return getBean(
-                "select t.* from tea.permit_type t where lower(t.name) = lower(?) and t.sys_status = 'A'",
+                "select t.* from parking.permit_type t where lower(t.name) = lower(?) and t.sys_status = 'A'",
                 typeBp, name);
     }
 
     public Long insertPermitType(PermitType type) {
         return queryForObject(
-                "insert into tea.permit_type (name) values (?) returning id", Long.class, type.getName());
+                "insert into parking.permit_type (name) values (?) returning id", Long.class, type.getName());
     }
 
     public List<Person> persons() {
         return getBeans(
-                "select p.* from tea.person p where p.sys_status = 'A' order by p.name", personBp);
+                "select p.* from parking.person p where p.sys_status = 'A' order by p.name", personBp);
     }
 
     public Person loadPerson(Long id) {
-        return getBean("select p.* from tea.person p where p.id = ? and p.sys_status = 'A'", personBp, id);
+        return getBean("select p.* from parking.person p where p.id = ? and p.sys_status = 'A'", personBp, id);
     }
 
     public Person loadPersonByEmail(String email) {
         return getBean(
-                "select p.* from tea.person p where lower(p.email) = lower(?) and p.sys_status = 'A'",
+                "select p.* from parking.person p where lower(p.email) = lower(?) and p.sys_status = 'A'",
                 personBp, email);
     }
 
     public Long insertPerson(Person person) {
         return queryForObject(
-                "insert into tea.person (name, email) values (?, ?) returning id",
+                "insert into parking.person (name, email) values (?, ?) returning id",
                 Long.class, person.getName(), person.getEmail());
     }
 }

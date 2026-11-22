@@ -4,6 +4,7 @@ import { DatePicker, Form, Input, Select } from 'antd';
 import { AppButtonPrimary, AppButtonSecondary, AppCard, useAppNotification } from '@helex/ui';
 import type { Dayjs } from 'dayjs';
 import { permitApi, type PermitType, type Person } from '../api';
+import { endDateRule } from '../dates';
 import { ReasonPicker } from '../reasons';
 
 export const PermitCreate = () => {
@@ -70,7 +71,12 @@ export const PermitCreate = () => {
         <Form.Item name="startDate" label="Start date" rules={[{ required: true }]}>
           <DatePicker style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item name="endDate" label="End date" rules={[{ required: true }]} extra="Must not be before the start date">
+        <Form.Item
+          name="endDate"
+          label="End date"
+          dependencies={['startDate']}
+          rules={[{ required: true }, endDateRule]}
+        >
           <DatePicker style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item name="description" label="Select reason:" rules={[{ required: true, max: 200 }]}>

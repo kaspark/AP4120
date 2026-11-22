@@ -3,7 +3,7 @@ package ee.taltech.ite4120.parking.model;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
-/** One parking permit. Maps onto {@code tea.permits}. */
+/** One parking permit. Maps onto {@code parking.permits}. */
 public class Permit {
 
     private Long id;
@@ -15,7 +15,7 @@ public class Permit {
     private String description;
     private String licensePlate;
 
-    /** Joined for the list and the record page. Not columns of {@code tea.permits}. */
+    /** Joined for the list and the record page. Not columns of {@code parking.permits}. */
     private String permitTypeName;
     private String holderName;
     private String grantedByName;

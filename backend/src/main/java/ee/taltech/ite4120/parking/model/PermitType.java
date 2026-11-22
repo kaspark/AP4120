@@ -1,6 +1,6 @@
 package ee.taltech.ite4120.parking.model;
 
-/** One row of {@code tea.permit_type} — Resident, Visitor, Staff, or Service. */
+/** One row of {@code parking.permit_type} — Resident, Visitor, Staff, or Service. */
 public class PermitType {
 
     private Long id;
