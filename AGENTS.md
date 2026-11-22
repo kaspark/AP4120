@@ -26,7 +26,7 @@ break.
 A course template: a working Spring Boot + React application consuming the Helex
 platform as **published libraries** (`org.helex.emr:*` from GitHub Packages,
 `@helex/ui` and friends from GitHub npm). This repository's component is the
-**parking permit portal** (`ee.taltech.ite4120.parking`): people, permit types, and permits. The PostgreSQL schema is still named `tea` — the first Liquibase changesets shipped under that name and are not edited.
+**parking permit portal** (`ee.taltech.ite4120.parking`): people, permit types, and permits. The PostgreSQL schema is `parking`. The first Liquibase changesets created `tea` and are not edited; `06-schema-parking.sql` renames that schema.
 
 ## Process rules (non-negotiable)
 

@@ -14,7 +14,9 @@ spring:
       connection-init-sql: "select set_config('core.client_identifier', 'tea', false)"
   liquibase:
     change-log: classpath:tea/db/changelog/changelog.xml
-    default-schema: tea
+    # The business schema is created as tea and renamed to parking by the last
+    # changeset, so Liquibase's own default stays public, which always exists.
+    default-schema: public
     liquibase-schema: public
     contexts: demo
     parameters:

@@ -66,11 +66,11 @@ repository secret (the same classic token as in § Tools).
 
 | Table | Holds |
 | --- | --- |
-| `tea.person` | people who hold or grant a permit: name and email |
-| `tea.permit_type` | Resident, Visitor, Staff, Service |
-| `tea.permits` | holder, type, start and end dates, who granted it, and why |
+| `parking.person` | people who hold or grant a permit: name and email |
+| `parking.permit_type` | Resident, Visitor, Staff, Service |
+| `parking.permits` | holder, type, license plate, start and end dates, who granted it, and why |
 
-Demo permits, under Liquibase context `demo`: five people and eight permits. The rows are the example-data tables in `docs/src/specifications/PARK.01-parking-permits.md`. People load from `90-demo-data.sql` and `91-demo-data.sql`; `04-parking-permit.sql` turns the shipped tea tables into this model; `92-demo-permits.sql` loads the permits.
+Demo permits, under Liquibase context `demo`: five people and eight permits. The rows are the example-data tables in `docs/src/specifications/PARK.01-parking-permits.md`. People load from `90-demo-data.sql` and `91-demo-data.sql`; `04-parking-permit.sql` turns the shipped tea tables into this model; `92-demo-permits.sql` loads the permits; `06-schema-parking.sql` renames the schema to `parking`; `93-demo-permit-plates.sql` sets each demo permit's license plate.
 
 Rules of the road: `AGENTS.md`.
 
