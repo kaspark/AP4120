@@ -27,6 +27,10 @@ public class PermitRequest {
     @Size(max = 200)
     private String description;
 
+    @NotBlank
+    @Size(max = 20)
+    private String licensePlate;
+
     public Permit toModel() {
         Permit permit = new Permit();
         permit.setPermitTypeId(permitTypeId);
@@ -35,6 +39,7 @@ public class PermitRequest {
         permit.setStartDate(startDate);
         permit.setEndDate(endDate);
         permit.setDescription(description);
+        permit.setLicensePlate(licensePlate);
         return permit;
     }
 
@@ -50,4 +55,6 @@ public class PermitRequest {
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getLicensePlate() { return licensePlate; }
+    public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
 }

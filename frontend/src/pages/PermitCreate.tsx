@@ -4,6 +4,7 @@ import { DatePicker, Form, Input, Select } from 'antd';
 import { AppButtonPrimary, AppButtonSecondary, AppCard, useAppNotification } from '@helex/ui';
 import type { Dayjs } from 'dayjs';
 import { permitApi, type PermitType, type Person } from '../api';
+import { ReasonPicker } from '../reasons';
 
 export const PermitCreate = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export const PermitCreate = () => {
     startDate: Dayjs;
     endDate: Dayjs;
     description: string;
+    licensePlate: string;
   }) => {
     setSaving(true);
     permitApi
@@ -38,6 +40,7 @@ export const PermitCreate = () => {
         startDate: values.startDate.format('YYYY-MM-DD'),
         endDate: values.endDate.format('YYYY-MM-DD'),
         description: values.description,
+        licensePlate: values.licensePlate.trim(),
       })
       .then((created) => {
         notify.success('Added', created.holderName ?? 'Permit');
@@ -52,8 +55,11 @@ export const PermitCreate = () => {
   return (
     <AppCard title="Add permit" style={{ maxWidth: 640, margin: '24px auto' }}>
       <Form layout="vertical" onFinish={submit} requiredMark>
-        <Form.Item name="holderId" label="Holder" rules={[{ required: true }]}>
+        <Form.Item name="holderId" label="Permit holder" rules={[{ required: true }]}>
           <Select options={personOptions} placeholder="Who the permit is for" />
+        </Form.Item>
+        <Form.Item name="licensePlate" label="License plate number" rules={[{ required: true, whitespace: true, max: 20 }]}>
+          <Input maxLength={20} placeholder="Enter license plate number" />
         </Form.Item>
         <Form.Item name="permitTypeId" label="Permit type" rules={[{ required: true }]}>
           <Select options={types.map((t) => ({ value: t.id, label: t.name }))} placeholder="Choose a type" />
@@ -67,8 +73,8 @@ export const PermitCreate = () => {
         <Form.Item name="endDate" label="End date" rules={[{ required: true }]} extra="Must not be before the start date">
           <DatePicker style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item name="description" label="Why" rules={[{ required: true, max: 200 }]}>
-          <Input.TextArea rows={3} maxLength={200} placeholder="Why this parking access was granted" />
+        <Form.Item name="description" label="Select reason:" rules={[{ required: true, max: 200 }]}>
+          <ReasonPicker />
         </Form.Item>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <AppButtonSecondary onClick={() => navigate('/permits')}>Cancel</AppButtonSecondary>

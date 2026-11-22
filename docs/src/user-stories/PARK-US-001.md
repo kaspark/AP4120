@@ -8,12 +8,13 @@
 
 ## Context
 
-Three tables: the people who hold permits, the permit types (resident, visitor, staff, service), and each permit. A permit records the holder, the type, the start and end dates, who granted it, and a short reason. The demo portal opens with the five people and eight permits listed in [PARK.01](../specifications/PARK.01-parking-permits.md#example-data).
+Three tables: the people who hold permits, the permit types (resident, visitor, staff, service), and each permit. A permit records the holder, the type, the license plate, the start and end dates, who granted it, and a short reason. The demo portal opens with the five people and eight permits listed in [PARK.01](../specifications/PARK.01-parking-permits.md#example-data).
 
-Out of scope: payment, licence-plate recognition, and authentication beyond the course mock sign-in.
+Out of scope: payment, licence-plate recognition, and authentication beyond the course mock sign-in. The clerk types the plate; the portal does not read it from a camera.
 
 ## Acceptance criteria
 
 - A permit cannot end before it starts.
 - The reason is at most 200 characters.
+- A license plate is required, and it is at most 20 characters.
 - An email belongs to at most one active person.

@@ -14,14 +14,21 @@ const componentRoutes = Object.values(
 ).flatMap((m) => m.routes);
 
 export const App = () => (
-  <Routes>
-    <Route path="/" element={<Navigate to="/permits" replace />} />
-    <Route path="/teas" element={<Navigate to="/permits" replace />} />
-    <Route path="/teas/new" element={<Navigate to="/permits/new" replace />} />
-    <Route path="/teas/:id" element={<LegacyTeaRedirect />} />
-    <Route path="/permits" element={<PermitList />} />
-    <Route path="/permits/new" element={<PermitCreate />} />
-    <Route path="/permits/:id" element={<PermitDetail />} />
-    {componentRoutes}
-  </Routes>
+  <div>
+    <div aria-hidden="true" style={{ display: 'flex', height: 4, width: '100%' }}>
+      <div style={{ flex: 1, background: '#e4067e' }} />
+      <div style={{ flex: 1, background: '#aa1352' }} />
+      <div style={{ flex: 1, background: '#342b60' }} />
+    </div>
+    <Routes>
+      <Route path="/" element={<Navigate to="/permits" replace />} />
+      <Route path="/teas" element={<Navigate to="/permits" replace />} />
+      <Route path="/teas/new" element={<Navigate to="/permits/new" replace />} />
+      <Route path="/teas/:id" element={<LegacyTeaRedirect />} />
+      <Route path="/permits" element={<PermitList />} />
+      <Route path="/permits/new" element={<PermitCreate />} />
+      <Route path="/permits/:id" element={<PermitDetail />} />
+      {componentRoutes}
+    </Routes>
+  </div>
 );

@@ -15,21 +15,13 @@ import {
   type ResourceFormSection,
 } from '@helex/ui';
 import { permitApi, type Permit, type PermitType, type Person } from '../api';
+import { ReasonPicker } from '../reasons';
 
 const DateField = ({ value, onChange }: { value?: unknown; onChange?: (next: string | null) => void }) => (
   <DatePicker
     style={{ width: '100%' }}
     value={value ? dayjs(String(value)) : null}
     onChange={(d) => onChange?.(d ? d.format('YYYY-MM-DD') : null)}
-  />
-);
-
-const DescriptionField = ({ value, onChange }: { value?: unknown; onChange?: (next: string) => void }) => (
-  <Input.TextArea
-    rows={3}
-    maxLength={200}
-    value={value == null ? '' : String(value)}
-    onChange={(e) => onChange?.(e.target.value)}
   />
 );
 
@@ -79,6 +71,7 @@ export const PermitDetail = () => {
         startDate: values.startDate,
         endDate: values.endDate,
         description: values.description,
+        licensePlate: values.licensePlate?.trim(),
       });
       dc.load(updated);
       form.setFieldsValue(updated);
@@ -98,7 +91,7 @@ export const PermitDetail = () => {
       notify.success('Retired', dc.current.holderName ?? 'Permit');
       navigate('/permits');
     } catch (e) {
-      notify.error('Retire failed', (e as Error).message);
+      notify.error('Remove failed', (e as Error).message);
       setDeleting(false);
     }
   };
@@ -108,15 +101,31 @@ export const PermitDetail = () => {
   const sections: ResourceFormSection<Permit>[] = [
     {
       key: 'who',
-      title: 'Permit',
+      title: 'Parking permit',
       fields: [
         {
           name: 'holderId',
-          label: 'Holder',
+          label: 'Permit holder',
           type: 'select',
           required: true,
           options: personOptions,
           viewRender: (holderId) => persons.find((p) => p.id === holderId)?.name ?? dc.current.holderName ?? '—',
+        },
+        {
+          name: 'licensePlate',
+          label: 'License plate number',
+          type: 'custom',
+          required: true,
+          rules: [{ required: true, whitespace: true, max: 20 }],
+          render: ({ value, onChange }) => (
+            <Input
+              maxLength={20}
+              placeholder="Enter license plate number"
+              value={value == null ? '' : String(value)}
+              onChange={(event) => onChange?.(event.target.value)}
+            />
+          ),
+          viewRender: (value) => (value ? String(value) : '—'),
         },
         {
           name: 'permitTypeId',
@@ -159,11 +168,13 @@ export const PermitDetail = () => {
         },
         {
           name: 'description',
-          label: 'Why',
+          label: 'Reason',
           type: 'custom',
           required: true,
           rules: [{ required: true, max: 200 }],
-          render: ({ value, onChange }) => <DescriptionField value={value} onChange={onChange} />,
+          render: ({ value, onChange }) => (
+            <ReasonPicker key={`${mode}:${permitId}`} value={value} onChange={onChange} />
+          ),
           viewRender: (value) => (value ? String(value) : '—'),
         },
       ],
@@ -195,8 +206,8 @@ export const PermitDetail = () => {
       }}
       onSave={save}
       onDelete={retire}
-      deleteLabel="Retire"
-      deleteConfirmText="Retire this permit? It stays in the database with status retired."
+      deleteLabel="Remove"
+      deleteConfirmText="Remove this permit? It stays in the database with status retired."
       sidebar={
         <AppCard title="Metadata" size="small">
           <FieldItem label="Created at">
