@@ -1,6 +1,5 @@
 package ee.taltech.ite4120.parking;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import ee.taltech.ite4120.parking.dto.PermitQueryParams;
@@ -9,7 +8,6 @@ import ee.taltech.ite4120.parking.model.Person;
 import ee.taltech.ite4120.parking.service.PermitService;
 import java.time.LocalDate;
 import org.helex.commons.exception.ApiClientException;
-import org.helex.commons.exception.ConflictException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
