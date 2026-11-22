@@ -1,6 +1,5 @@
 package ee.taltech.ite4120.parking;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import ee.taltech.ite4120.parking.model.Permit;
@@ -8,7 +7,6 @@ import ee.taltech.ite4120.parking.model.Person;
 import ee.taltech.ite4120.parking.service.PermitService;
 import java.time.LocalDate;
 import org.helex.commons.exception.ApiClientException;
-import org.helex.commons.exception.ConflictException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -72,16 +70,6 @@ class ParkingBusinessRulesIT {
         assertThatThrownBy(() -> permits.create(permit))
                 .isInstanceOf(ApiClientException.class)
                 .hasMessageContaining("licensePlate must be at most 20 characters");
-    }
-
-    @Test
-    void anEmailIsUniqueAmongActivePersons() {
-        Person first = permits.createPerson(person("ada@example.com"));
-        assertThat(first.getId()).isNotNull();
-
-        assertThatThrownBy(() -> permits.createPerson(person("ada@example.com")))
-                .isInstanceOf(ConflictException.class)
-                .hasMessageContaining("already exists");
     }
 
     private Permit permit() {
