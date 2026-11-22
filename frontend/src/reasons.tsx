@@ -27,7 +27,7 @@ export function parseReason(description: string): { selected: string[]; other: s
 }
 
 export function composeReason(selected: string[], otherOn: boolean, other: string): string {
-  const parts = REASON_OPTIONS.filter((option) => selected.includes(option));
+  const parts: string[] = REASON_OPTIONS.filter((option) => selected.includes(option));
   if (otherOn && other.trim()) {
     parts.push(other.trim());
   }
