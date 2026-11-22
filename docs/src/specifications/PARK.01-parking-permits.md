@@ -12,9 +12,9 @@ Where a manual still uses the name `animals`, this specification wins.
 
 ## Description
 
-A portal of parking permits: create, search, view, update, retire (soft delete). Each permit belongs to a person and a permit type. Someone grants it, for a start date and an end date, with a short reason. The id is assigned by the database.
+A portal of parking permits: create, search, view, update, retire (soft delete). Each permit belongs to a person and a permit type. Someone grants it, for a start date and an end date, with a license plate and a short reason. The id is assigned by the database.
 
-Out of scope: payment, licence plates, and authentication beyond the course mock sign-in (`Authorization: Bearer <username>` when mock auth is on).
+Out of scope: payment, licence-plate recognition, and authentication beyond the course mock sign-in (`Authorization: Bearer <username>` when mock auth is on). The plate is typed by the clerk.
 
 The Java package is `ee.taltech.ite4120.parking` (controller → service → repository). The React pages are `PermitList`, `PermitCreate`, and `PermitDetail`. The browser title and the shell name are **Parking permits**.
 
@@ -29,7 +29,8 @@ Example record. The ids in this body are assigned by the database; the seed belo
   "grantedById": 5,
   "startDate": "2026-09-01",
   "endDate": "2027-08-31",
-  "description": "Lives at Akadeemia tee 15 and needs a resident bay."
+  "description": "Lives at Akadeemia tee 15 and needs a resident bay.",
+  "licensePlate": "123 ABC"
 }
 ```
 
@@ -78,7 +79,8 @@ On a database that already ran the tea demo changesets, those changesets keep th
 | | `holder_id` | bigint | required; FK → `tea.person`. The person the permit is for |
 | | `granted_by_id` | bigint | required; FK → `tea.person`. Who granted the access |
 | | `start_date`, `end_date` | date | required; `end_date >= start_date` |
-| | `description` | text | required; 1 to 200 characters. Why the parking was granted |
+| | `description` | text | required; 1 to 200 characters. Why the parking was granted. The screen stores ticked reasons joined by `; `, and any "Other" text as one more part |
+| | `license_plate` | text | required on create and update; 1 to 20 characters after trimming. Nullable only for permits that already existed before the column. A string, never a number |
 | | `sys_*` | — | same platform columns. Retire sets `sys_status` to `C` |
 
 Call `core.create_table_metadata` on each business table. Partial indexes, `where (sys_status = 'A')`:
@@ -125,6 +127,7 @@ create table tea.permits (
     start_date          date not null,
     end_date            date not null,
     description         text not null,
+    license_plate       text,
     sys_status          char(1),
     sys_version         int,
     sys_created_at      timestamptz,
@@ -136,7 +139,8 @@ create table tea.permits (
     constraint permit_holder_fk foreign key (holder_id) references tea.person (id),
     constraint permit_granted_by_fk foreign key (granted_by_id) references tea.person (id),
     constraint permit_dates_chk check (end_date >= start_date),
-    constraint permit_description_chk check (char_length(description) between 1 and 200)
+    constraint permit_description_chk check (char_length(description) between 1 and 200),
+    constraint permit_license_plate_chk check (license_plate is null or char_length(license_plate) between 1 and 20)
 );
 ```
 
@@ -172,8 +176,10 @@ Permit validation, in this order, before the database constraints:
 - `startDate is required`
 - `endDate is required`
 - `endDate must not be before startDate`
+- `licensePlate is required` when it is missing or blank
+- `licensePlate must be at most 20 characters`
 
-The request body rejects a missing field, a description longer than 200 characters, a person name or email longer than 255 characters, and an email that is not an email address. Those answers are 400 with title `Validation failed`.
+The request body rejects a missing field, a description longer than 200 characters, a license plate longer than 20 characters, a person name or email longer than 255 characters, and an email that is not an email address. Those answers are 400 with title `Validation failed`.
 
 ## UI
 
@@ -181,16 +187,18 @@ The request body rejects a missing field, a description longer than 200 characte
 
 | Screen | Element | Component | Rules |
 | --- | --- | --- | --- |
-| Permit list `/permits` | table | `ResourceList` | title **Permits**. First column **No.** is the row number `1.` `2.` `3.` in the order the loaded rows are shown, and it cannot be hidden. **Holder** links to `/permits/{id}`. Then **Type** (`AppTag`), **Start**, **End**, **Granted by**, **Why**. Search placeholder `Holder, granter, or reason…`, debounced 250 ms, sent as `textContains` with `limit=50`. **Add permit** goes to `/permits/new`. The detail drawer shows holder, type, granter, the two dates, and the reason |
-| Add permit `/permits/new` | form | antd `Form` | **Holder**, **Permit type**, **Granted by** (antd `Select`, people labelled `name · email`), **Start date**, **End date** (antd `DatePicker`; the end date notes that it must not be before the start), **Why** (`Input.TextArea`, required, max 200). Cancel returns to `/permits`. Success returns to the list |
-| Permit page `/permits/{id}` | view / edit | `ResourceForm` | entity label **Permit**, name is the holder, subtitle and chip are the type. Fields: holder, permit type, granted by, start date, end date, why. Dates are a `custom` field that converts `YYYY-MM-DD` to dayjs and back (`DateField`). Why is a `custom` textarea, max 200. **Retire** soft-deletes and returns to the list. Confirm: `Retire this permit? It stays in the database with status retired.` The sidebar shows created at / by, modified at / by, and version |
+| Permit list `/permits` | table | `ResourceList` | title **Permits**. A TalTech accent bar (magenta, berry, violet) sits above the page. First column **No.** is the row number `1.` `2.` `3.` in the order the loaded rows are shown, and it cannot be hidden. **Permit holder** links to `/permits/{id}`. Then **Permit type** (`AppTag`), **Start**, **End**, **Granted by**, **Reason**. Search placeholder `Holder, granter, or reason…`, debounced 250 ms, sent as `textContains` with `limit=50`. **Add permit** goes to `/permits/new`. The detail drawer shows holder, type, granter, the two dates, and the reason |
+| Add permit `/permits/new` | form | antd `Form` | **Permit holder**, **License plate number** (required, max 20), **Permit type**, **Granted by** (antd `Select`, people labelled `name · email`), **Start date**, **End date** (antd `DatePicker`; the end date notes that it must not be before the start), **Select reason:** (antd `Checkbox` list: District 1 resident, District 2 resident, TalTech staff, TalTech student, Contractor, Maintenance staff, and **Other:** with a text field). Ticked reasons and the Other text are joined with `; ` and saved as `description` (required, max 200). Cancel returns to `/permits`. Success returns to the list |
+| Permit page `/permits/{id}` | view / edit | `ResourceForm` | entity label **Permit**, name is the holder, subtitle and chip are the type. The permit card is titled **Parking permit**. Fields: permit holder, license plate number, permit type, granted by, start date, end date, reason. Dates are a `custom` field that converts `YYYY-MM-DD` to dayjs and back (`DateField`). Reason is the same checkbox list as the add form, max 200. **Remove** soft-deletes and returns to the list. Confirm: `Remove this permit? It stays in the database with status retired.` The sidebar shows created at / by, modified at / by, and version |
 
 A missing permit on the record page reports the error and returns to the list.
 
 ## Business tests
 
-These three are the executable tests. They call the service, and they also prove the migrations run from an empty database.
+These are the executable tests. They call the service, and they also prove the migrations run from an empty database.
 
 1. **End is not before start.** Given a permit whose end date is the day before it starts, when it is granted, then the grant is refused with "endDate must not be before startDate".
 2. **The reason is at most 200 characters.** Given a description of 201 characters, when it is granted, then the grant is refused with "description must be at most 200 characters".
-3. **An email is unique among active people.** Given an active person with an email, when a second person claims it, then the registration conflicts with a message containing "already exists".
+3. **A license plate is required.** Given a permit whose plate is missing or blank, when it is granted, then the grant is refused with "licensePlate is required".
+4. **A license plate is at most 20 characters.** Given a plate of 21 characters, when it is granted, then the grant is refused with "licensePlate must be at most 20 characters".
+5. **An email is unique among active people.** Given an active person with an email, when a second person claims it, then the registration conflicts with a message containing "already exists".

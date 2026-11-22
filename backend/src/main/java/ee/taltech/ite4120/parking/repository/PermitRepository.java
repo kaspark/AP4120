@@ -82,23 +82,24 @@ public class PermitRepository extends BaseRepository {
 
     public Long insert(Permit permit) {
         String sql = """
-                insert into tea.permits (permit_type_id, holder_id, granted_by_id, start_date, end_date, description)
-                values (?, ?, ?, ?, ?, ?)
+                insert into tea.permits
+                    (permit_type_id, holder_id, granted_by_id, start_date, end_date, description, license_plate)
+                values (?, ?, ?, ?, ?, ?, ?)
                 returning id""";
         return queryForObject(sql, Long.class,
                 permit.getPermitTypeId(), permit.getHolderId(), permit.getGrantedById(),
-                permit.getStartDate(), permit.getEndDate(), permit.getDescription());
+                permit.getStartDate(), permit.getEndDate(), permit.getDescription(), permit.getLicensePlate());
     }
 
     public boolean update(Permit permit) {
         String sql = """
                 update tea.permits
                    set permit_type_id = ?, holder_id = ?, granted_by_id = ?,
-                       start_date = ?, end_date = ?, description = ?
+                       start_date = ?, end_date = ?, description = ?, license_plate = ?
                  where id = ? and sys_status = 'A'""";
         return jdbcTemplate.update(sql,
                 permit.getPermitTypeId(), permit.getHolderId(), permit.getGrantedById(),
-                permit.getStartDate(), permit.getEndDate(), permit.getDescription(),
+                permit.getStartDate(), permit.getEndDate(), permit.getDescription(), permit.getLicensePlate(),
                 permit.getId()) == 1;
     }
 

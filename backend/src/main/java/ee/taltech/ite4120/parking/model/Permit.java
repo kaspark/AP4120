@@ -13,6 +13,7 @@ public class Permit {
     private LocalDate startDate;
     private LocalDate endDate;
     private String description;
+    private String licensePlate;
 
     /** Joined for the list and the record page. Not columns of {@code tea.permits}. */
     private String permitTypeName;
@@ -40,6 +41,8 @@ public class Permit {
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getLicensePlate() { return licensePlate; }
+    public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
     public String getPermitTypeName() { return permitTypeName; }
     public void setPermitTypeName(String permitTypeName) { this.permitTypeName = permitTypeName; }
     public String getHolderName() { return holderName; }

@@ -55,6 +55,26 @@ class ParkingBusinessRulesIT {
     }
 
     @Test
+    void licensePlateIsRequired() {
+        Permit permit = permit();
+        permit.setLicensePlate("  ");
+
+        assertThatThrownBy(() -> permits.create(permit))
+                .isInstanceOf(ApiClientException.class)
+                .hasMessageContaining("licensePlate is required");
+    }
+
+    @Test
+    void licensePlateMustBeAtMost20Characters() {
+        Permit permit = permit();
+        permit.setLicensePlate("A".repeat(21));
+
+        assertThatThrownBy(() -> permits.create(permit))
+                .isInstanceOf(ApiClientException.class)
+                .hasMessageContaining("licensePlate must be at most 20 characters");
+    }
+
+    @Test
     void anEmailIsUniqueAmongActivePersons() {
         Person first = permits.createPerson(person("ada@example.com"));
         assertThat(first.getId()).isNotNull();
@@ -74,6 +94,7 @@ class ParkingBusinessRulesIT {
         permit.setStartDate(LocalDate.of(2026, 9, 1));
         permit.setEndDate(LocalDate.of(2027, 8, 31));
         permit.setDescription("Resident bay for the academic year.");
+        permit.setLicensePlate("123 ABC");
         return permit;
     }
 

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PermitService {
 
     static final int DESCRIPTION_MAX = 200;
+    static final int LICENSE_PLATE_MAX = 20;
 
     private final PermitRepository repository;
 
@@ -132,6 +133,14 @@ public class PermitService {
         if (permit.getEndDate().isBefore(permit.getStartDate())) {
             throw new ApiClientException("endDate must not be before startDate");
         }
+        if (permit.getLicensePlate() == null || permit.getLicensePlate().isBlank()) {
+            throw new ApiClientException("licensePlate is required");
+        }
+        String plate = permit.getLicensePlate().trim();
+        if (plate.length() > LICENSE_PLATE_MAX) {
+            throw new ApiClientException("licensePlate must be at most 20 characters");
+        }
+        permit.setLicensePlate(plate);
         if (permit.getPermitTypeId() == null || !repository.permitTypeExists(permit.getPermitTypeId())) {
             throw new ApiClientException("unknown permitTypeId: " + permit.getPermitTypeId());
         }

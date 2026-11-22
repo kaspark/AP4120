@@ -74,6 +74,7 @@ class WriteAttributionIT {
         permit.setStartDate(LocalDate.of(2026, 1, 1));
         permit.setEndDate(LocalDate.of(2027, 1, 1));
         permit.setDescription("Staff parking by the main building.");
+        permit.setLicensePlate("456 DEF");
         return permit;
     }
 
