@@ -17,6 +17,7 @@ export interface Permit {
   startDate: string;
   endDate: string;
   description: string;
+  licensePlate?: string | null;
   permitTypeName?: string;
   holderName?: string;
   grantedByName?: string;

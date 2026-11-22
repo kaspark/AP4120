@@ -35,7 +35,7 @@ export const PermitList = () => {
     },
     {
       key: 'holderName',
-      title: 'Holder',
+      title: 'Permit holder',
       dataIndex: 'holderName',
       locked: true,
       render: (name: string, permit: Permit) => (
@@ -53,14 +53,14 @@ export const PermitList = () => {
     },
     {
       key: 'permitTypeName',
-      title: 'Type',
+      title: 'Permit type',
       dataIndex: 'permitTypeName',
       render: (name: string) => <AppTag>{name}</AppTag>,
     },
     { key: 'startDate', title: 'Start', dataIndex: 'startDate' },
     { key: 'endDate', title: 'End', dataIndex: 'endDate' },
     { key: 'grantedByName', title: 'Granted by', dataIndex: 'grantedByName' },
-    { key: 'description', title: 'Why', dataIndex: 'description' },
+    { key: 'description', title: 'Reason', dataIndex: 'description' },
   ];
 
   return (
