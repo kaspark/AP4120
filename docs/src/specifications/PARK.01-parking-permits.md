@@ -201,4 +201,3 @@ These are the executable tests. They call the service, and they also prove the m
 2. **The reason is at most 200 characters.** Given a description of 201 characters, when it is granted, then the grant is refused with "description must be at most 200 characters".
 3. **A license plate is required.** Given a permit whose plate is missing or blank, when it is granted, then the grant is refused with "licensePlate is required".
 4. **A license plate is at most 20 characters.** Given a plate of 21 characters, when it is granted, then the grant is refused with "licensePlate must be at most 20 characters".
-5. **An email is unique among active people.** Given an active person with an email, when a second person claims it, then the registration conflicts with a message containing "already exists".

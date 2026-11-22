@@ -17,4 +17,3 @@ Out of scope: payment, licence-plate recognition, and authentication beyond the 
 - A permit cannot end before it starts.
 - The reason is at most 200 characters.
 - A license plate is required, and it is at most 20 characters.
-- An email belongs to at most one active person.
